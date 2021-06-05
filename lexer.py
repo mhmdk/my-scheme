@@ -72,11 +72,11 @@ keywords_map = {
 
 
 class Token:
-    # TODO add column, and add it to token construction and error reporting
-    def __init__(self, lexeme, typ, line_number):
+    def __init__(self, lexeme, typ, line_number, column_number):
         self.lexeme = lexeme
         self.type = typ
         self.line_number = line_number
+        self.column_number = column_number
 
 
 class Lexer:
@@ -105,12 +105,41 @@ class Lexer:
 
     def token(self):
         current_char = self.text[self.current_index]
+
         if self.isinitial():
             return self.identifier()
+
         elif self.ispeculiaridentifier():
             return self.peculiaridentifier()
-        elif self.issign() or self.isdigit() or current_char == '.': # be careful, . is an independent token as well
+
+        elif current_char == '.':
+            if self.next() is not None and self.next().isdigit():
+                return self.number()
+            elif self.isnextdelimiter():
+                return self.dot()
+            else:
+                return self.identifier()
+
+        elif self.issign() or self.isdigit():
             return self.number()
+
+        elif current_char == '"':
+            return self.string()
+
+        elif current_char == '#':
+            if self.next() is not None and self.next() == "\\":
+                return self.character()
+            else:
+                return self.boolean()
+        elif current_char == '(':
+            return self.openparenthesis()
+
+        elif current_char == ')':
+            return self.closeparenthesis()
+
+        elif current_char == ';':
+            return self.comment()
+
         else:
             self.raiseerror(f"unexpected character {current_char}")
             self.advance()
@@ -124,12 +153,12 @@ class Lexer:
         if not self.checkdelimiter():
             self.raiseerror(f"expected delimiter after identifier name {lexeme}, got {self.text[self.current_index]}")
         if lexeme in keywords_map:
-            return Token(lexeme, keywords_map[lexeme], self.current_line)
+            return self.maketoken(lexeme, keywords_map[lexeme])
         else:
-            return Token(lexeme, TokenType.IDENTIFIER, self.current_line)
+            return self.maketoken(lexeme, TokenType.IDENTIFIER)
 
     def peculiaridentifier(self):
-        token = Token(self.text[self.current_index], TokenType.IDENTIFIER, self.current_line)
+        token = self.maketoken(self.text[self.current_index], TokenType.IDENTIFIER)
         self.advance()
         if not self.checkdelimiter():
             self.raiseerror(
@@ -137,19 +166,14 @@ class Lexer:
         return token
 
     def number(self):
-        dotreached = False
-        error=False
+        dotcount = 0
 
         def checkdot():
-            nonlocal dotreached
-            nonlocal error
+            nonlocal dotcount
             if self.text[self.current_index] == '.':
-                if dotreached:
+                dotcount += 1
+                if dotcount > 1:
                     self.raiseerror(f"multiple decimal points in number literal:{self.text[self.current_index]}")
-                    error=True
-                else:
-
-                    dotreached = True
 
         lexeme = self.text[self.current_index]
         checkdot()
@@ -161,21 +185,78 @@ class Lexer:
 
         if not self.isend():
             checkdot()
-            self.advance()
 
-            if not error:
+            if self.text[self.current_index] == '.':
+                lexeme += self.text[self.current_index]
+                self.advance()
                 while not self.isend() and self.text[self.current_index].isdigit():
                     lexeme += self.text[self.current_index]
+                    self.advance()
 
-                if not self.checkdelimiter():
-                    self.raiseerror(f"invalid character in number literal:{self.text[self.current_index]}")
+        if not self.checkdelimiter():
+            self.raiseerror(f"invalid character in number literal:{self.text[self.current_index]}")
 
-        return Token(lexeme, TokenType.NUMBER, self.current_line)
+        return self.maketoken(lexeme, TokenType.NUMBER)
 
+    def dot(self):
+        self.advance()
+        return self.maketoken(".", TokenType.DOT)
 
+    def string(self):
+        lexeme = self.text[self.current_index]
+        self.advance()
+        while not self.isend() and not self.text[self.current_index] == '"':
+            lexeme += self.text[self.current_index]
+            self.advance()
+        if self.isend():
+            self.raiseerror('unbalanced "')
+        else:
+            lexeme += self.text[self.current_index]
+            self.advance()
+            return self.maketoken(lexeme, TokenType.STRING)
+
+    def boolean(self):
+        lexeme = self.text[self.current_index]
+        self.advance()
+        if self.isend():
+            self.raiseerror("expected boolean literal")
+        if self.text[self.current_index] not in {'t', 'f'}:
+            self.raiseerror("boolean literal should be either 't' or 'f'")
+        lexeme += self.text[self.current_index]
+        self.advance()
+        return self.maketoken(lexeme, TokenType.BOOLEAN)
+
+    def character(self):
+        lexeme = self.text[self.current_index:self.current_index + 2]
+        self.advance()
+        self.advance()
+
+        while not self.isend() and not self.checkdelimiter():
+            lexeme += self.text[self.current_index]
+            self.advance()
+        if len(lexeme) > 3 and lexeme not in {'#\\space', '#\\newline'}:
+            self.raiseerror(f"invalid character name {lexeme}")
+        return self.maketoken(lexeme, TokenType.CHARACTER)
+
+    def openparenthesis(self):
+        self.advance()
+        return self.maketoken('(', TokenType.OPEN_PAREN)
+
+    def closeparenthesis(self):
+        self.advance()
+        return self.maketoken(')', TokenType.CLOSE_PAREN)
+
+    def comment(self):
+        lexeme = self.text[self.current_index]
+        self.advance()
+
+        while not self.isend() and not self.text[self.current_index] == '\n':
+            lexeme += self.text[self.current_index]
+            self.advance()
+
+        return self.maketoken(lexeme, TokenType.COMMENT)
 
     def advance(self):
-
         if self.text[self.current_index] == '\n':
             self.current_line += 1
             self.current_column = 1
@@ -224,4 +305,13 @@ class Lexer:
         return self.text[self.current_index] in ['+', '-']
 
     def isdigit(self):
-        self.text[self.current_index].isdigit()
+        return self.text[self.current_index].isdigit()
+
+    def next(self):
+        if self.current_index + 1 < self.text_length:
+            return self.text[self.current_index + 1]
+        else:
+            return None
+
+    def maketoken(self, lexeme, tokentype):
+        return Token(lexeme, tokentype, self.current_line, self.current_column)
