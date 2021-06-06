@@ -1,5 +1,5 @@
 
-##Lexical Grammar:##  
+## Lexical Grammar:
 reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.1  
 
 token -> keyword | identifier | number | string | boolean | character | ( | ) | .  
