@@ -1,4 +1,5 @@
-from lexer import TokenType
+from schemetoken import TokenType
+from schemeexpression import NumberLiteral
 
 
 class SyntaxTree:
@@ -12,19 +13,6 @@ class SyntaxTree:
 class SyntaxTreeVisitor:
     def visit_number_literal(self, number_literal):
         pass
-
-
-class Expression:
-    def accept(self, syntax_tree_visitor):
-        pass
-
-
-class NumberLiteral(Expression):
-    def __init__(self, lexeme):
-        self.lexeme = lexeme
-
-    def accept(self, syntax_tree_visitor):
-        syntax_tree_visitor.visit_number_literal(self)
 
 
 class Parser:

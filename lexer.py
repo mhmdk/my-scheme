@@ -1,5 +1,4 @@
-from enum import Enum, auto
-
+from schemetoken import Token, TokenType, keywords_map
 
 # ##Lexical Grammar:##
 # reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.1
@@ -21,62 +20,6 @@ from enum import Enum, auto
 # https://www.scheme.com/tspl2d/grammar.html
 # https://www.scheme.com/tspl4/grammar.html
 # https://docs.microsoft.com/en-us/cpp/c-language/lexical-grammar?view=msvc-160
-
-
-class TokenType(Enum):
-    # keyword:
-    ELSE = auto()
-    DEFINE = auto()
-    QUOTE = auto()
-    LAMBDA = auto()
-    IF = auto()
-    SET = auto()
-    BEGIN = auto()
-    COND = auto()
-    AND = auto()
-    OR = auto()
-    CASE = auto()
-    LET = auto()
-
-    # identifier
-    IDENTIFIER = auto()
-
-    # literals
-    NUMBER = auto()
-    STRING = auto()
-    BOOLEAN = auto()
-    CHARACTER = auto()
-
-    # delimiters
-    OPEN_PAREN = auto()
-    CLOSE_PAREN = auto()
-    DOT = auto()
-
-    COMMENT = auto()
-
-
-keywords_map = {
-    "else": TokenType.ELSE,
-    "define": TokenType.DEFINE,
-    "quote": TokenType.QUOTE,
-    "lambda": TokenType.LAMBDA,
-    "if": TokenType.IF,
-    "set": TokenType.SET,
-    "begin": TokenType.BEGIN,
-    "cond": TokenType.COND,
-    "and": TokenType.AND,
-    "or": TokenType.OR,
-    "case": TokenType.CASE,
-    "let": TokenType.LET
-}
-
-
-class Token:
-    def __init__(self, lexeme, typ, line_number, column_number):
-        self.lexeme = lexeme
-        self.type = typ
-        self.line_number = line_number
-        self.column_number = column_number
 
 
 class Lexer:

@@ -1,6 +1,8 @@
 import unittest
-from parser import Parser, NumberLiteral
-from lexer import Token, TokenType
+from schemetoken import Token, TokenType
+from parser import Parser
+from schemeexpression import NumberLiteral
+
 
 
 class ParserTest(unittest.TestCase):

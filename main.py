@@ -1,3 +1,4 @@
+from interpreter import Interpreter
 from lexer import Lexer
 from parser import Parser
 
@@ -25,6 +26,7 @@ def evaluate(program):
     syntax_tree = parser.parse()
     if parser.haserrors():
         return parser.errors[0]
+    return Interpreter().interpret_syntax_tree(syntax_tree)
 
 
 if __name__ == '__main__':
