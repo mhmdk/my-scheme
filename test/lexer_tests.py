@@ -159,5 +159,6 @@ class LexerTest(unittest.TestCase):
         self.assertEqual(lexemes,
                          ['(', '+', '9', '.2', ')', '(', 'f', '#t', '#\\newline', '#\\t', '"44string12.3"', '-'])
 
-    if __name__ == '__main__':
-        unittest.main()
+
+if __name__ == '__main__':
+    unittest.main()
