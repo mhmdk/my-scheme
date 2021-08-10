@@ -25,7 +25,7 @@ https://docs.microsoft.com/en-us/cpp/c-language/lexical-grammar?view=msvc-160
 ## Syntax Grammar: 
 Subset of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.3  
 
-expression -> variable | literal | call | lambda | conditional  
+expression -> identifier | literal | call | lambda | conditional  
 literal -> quotation | self-evaluating  
 self-evaluating -> boolean | character | number | string  
 quotation -> (quote datum)  

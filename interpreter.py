@@ -15,3 +15,19 @@ class Interpreter(SyntaxTreeVisitor):
     def visit_number_literal(self, number_literal):
         literal = number_literal.lexeme
         return float(literal) if '.' in literal else int(literal)
+
+    def visit_bool_literal(self, bool_literal):
+        literal = bool_literal.lexeme[1:]
+        return True if literal == 't' else False
+
+    def visit_char_literal(self, char_literal):
+        literal = char_literal.lexeme[2:]
+        if literal == "newline":
+            return "\n"
+        if literal == "space":
+            return ' '
+        return literal
+
+    def visit_string_literal(self, string_literal):
+        literal = string_literal.lexeme[1:len(string_literal.lexeme) - 1]
+        return literal
