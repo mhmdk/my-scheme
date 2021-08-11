@@ -6,13 +6,15 @@ from parser import Parser
 def main():
     repl()
 
+def scheme_print(value):
+    print(value.to_string())
 
 def repl():
     while True:
         try:
             expression = input("-> ")
             value = evaluate(expression)
-            print(value)
+            scheme_print(value)
         except EOFError:
             break
 

@@ -26,10 +26,10 @@ https://docs.microsoft.com/en-us/cpp/c-language/lexical-grammar?view=msvc-160
 Subset of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.3  
 
 expression -> identifier | literal | call | lambda | conditional  
-literal -> quotation | self-evaluating  
+literal -> quotation | self-evaluating
 self-evaluating -> boolean | character | number | string  
 quotation -> (quote datum)  
-datum -> boolean | character | number | string | identifier | list  
+datum -> boolean | character | number | string | identifier | list
 list -> (datum*)   
 call -> (operator operand*)  
 operator -> expression  
@@ -43,8 +43,11 @@ consequent -> expression
 alternate -> expression  
 
 to consider adding:  
-top level definitions, internal definitions in body, assignment, some derived expressions(ex :cond, let),   
-dot notation for pairs, including pairs in quoted expressions and formal parameters.  
+definitions (bonus for internal definitions), assignment with set!, some derived expressions
+(ex :and, or, cond, let, begin, case), dot notation for pairs, including pairs in quoted expressions
+and formal parameters.  
+for a list of primitive and derived expressions : 
+https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4
 
 
 see also:  

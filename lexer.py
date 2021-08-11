@@ -41,7 +41,9 @@ class Lexer:
             while not self.isend() and self.iswhitespace():
                 self.advance()
             if not self.isend():
-                tokens.append(self.token())
+                next_token = self.token()
+                if next_token is not None:
+                    tokens.append(next_token)
         if self.haserrors():
             return self.errors
         return tokens
@@ -81,7 +83,7 @@ class Lexer:
             return self.closeparenthesis()
 
         elif current_char == ';':
-            return self.comment()
+             self.comment()
 
         else:
             self.raiseerror(f"unexpected character {current_char}")

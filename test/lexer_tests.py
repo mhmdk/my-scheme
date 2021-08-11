@@ -136,8 +136,7 @@ class LexerTest(unittest.TestCase):
     def test_comment(self):
         lexer = Lexer(' ;this is a comment\n ')
         tokens = lexer.scan()
-        self.assertEqual(TokenType.COMMENT, tokens[0].type)
-        self.assertEqual(';this is a comment', tokens[0].lexeme)
+        self.assertEqual(len(tokens), 0)
 
     def test_error_should_contain_full_line(self):
         line = 'abc"errorhere ;some comment'

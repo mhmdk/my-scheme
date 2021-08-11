@@ -12,16 +12,16 @@ class InterpreterTests(unittest.TestCase):
         number_with_trailing_dot = NumberLiteral("-1.")
         leading_dot_result = self.interpreter.visit_number_literal(number_with_leading_dot)
         trailing_dot_result = self.interpreter.visit_number_literal(number_with_trailing_dot)
-        self.assertEqual(0.1, leading_dot_result)
-        self.assertEqual(-1, trailing_dot_result)
+        self.assertEqual(0.1, leading_dot_result.value)
+        self.assertEqual(-1, trailing_dot_result.value)
 
     def test_bool_literal(self):
         true_literal = BoolLiteral("#t")
         false_literal = BoolLiteral("#f")
         true_result = self.interpreter.visit_bool_literal(true_literal)
         false_result = self.interpreter.visit_bool_literal(false_literal)
-        self.assertEqual(True, true_result)
-        self.assertEqual(False, false_result)
+        self.assertEqual(True, true_result.value)
+        self.assertEqual(False, false_result.value)
 
     def test_char_literal(self):
         space_literal = CharLiteral("#\\space")
@@ -30,14 +30,19 @@ class InterpreterTests(unittest.TestCase):
         space_result = self.interpreter.visit_char_literal(space_literal)
         newline_result = self.interpreter.visit_char_literal(newline_literal)
         t_char_result = self.interpreter.visit_char_literal(t_char_literal)
-        self.assertEqual(' ', space_result)
-        self.assertEqual('\n', newline_result)
-        self.assertEqual('t', t_char_result)
+        self.assertEqual(' ', space_result.value)
+        self.assertEqual('\n', newline_result.value)
+        self.assertEqual('t', t_char_result.value)
 
     def test_string_literal(self):
         hello_literal = StringLiteral('"hello"')
         hello_result = self.interpreter.visit_string_literal(hello_literal)
-        self.assertEqual('hello', hello_result)
+        self.assertEqual('hello', hello_result.value)
+
+    def test_symbol(self):
+        hello_symbol = Symbol('hello')
+        hello_result = self.interpreter.visit_symbol(hello_symbol)
+        self.assertEqual('hello', hello_result.value)
 
 
 if __name__ == '__main__':

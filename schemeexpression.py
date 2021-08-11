@@ -33,3 +33,19 @@ class StringLiteral(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_string_literal(self)
+
+
+class QuotedList(Expression):
+    def __init__(self):
+        self.elements = []
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_list(self)
+
+
+class Symbol(Expression):
+    def __init__(self, symbol):
+        self.symbol = symbol
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_symbol(self)
