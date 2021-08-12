@@ -146,6 +146,16 @@ class ParserTest(unittest.TestCase):
         parser.parse()
         self.assertTrue(parser.haserrors())
 
+    def test_function_call(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.NUMBER,
+                                        TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        call = syntax_tree.nodes[0]
+        self.assertIs(type(call), Call)
+        self.assertIs(type(call.callee), Expression)
+        self.assertIs(type(call.args), Args)
+        self.assertTrue(type(arg) is Expression for arg in call.args.args)
+
 
 if __name__ == '__main__':
     unittest.main()

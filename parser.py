@@ -58,12 +58,14 @@ class Parser:
             if current_token.type == TokenType.IF:
                 expr = self.conditional()
             elif current_token.type == TokenType.LAMBDA:
-                pass
+                expr = Expression()
+                self.advance()
             else:
-                pass  # function call
+                expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
         elif current_token.type == TokenType.IDENTIFIER:
-            pass
+            expr = Expression()
+            self.advance()
         else:
             self.raise_error(f"unexpected token {current_token.lexeme}", current_token)
         return expr
@@ -133,6 +135,13 @@ class Parser:
         if not self.is_end_of_list():
             alternate = self.expression()
         return Conditional(test, consequent, alternate)
+
+    def call(self):
+        callee = self.expression()
+        args = Args()
+        while not self.is_end_of_list():
+            args.add(self.expression())
+        return Call(callee, args)
 
     def raise_error(self, message, token=None):
         if token is not None:

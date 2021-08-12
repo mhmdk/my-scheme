@@ -59,3 +59,20 @@ class Conditional(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_conditional(self)
+
+
+class Args():
+    def __init__(self):
+        self.args = []
+
+    def add(self, arg):
+        self.args.append(arg)
+
+
+class Call(Expression):
+    def __init__(self, callee, args=None):
+        self.callee = callee
+        self.args = args if args is not None else Args()
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_call(self)
