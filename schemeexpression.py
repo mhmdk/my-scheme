@@ -76,3 +76,11 @@ class Call(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_call(self)
+
+
+class VariableReference(Expression):
+    def __init__(self, variable_name):
+        self.variable_name = variable_name
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_variable_reference(self)

@@ -152,9 +152,16 @@ class ParserTest(unittest.TestCase):
         syntax_tree = Parser(tokens).parse()
         call = syntax_tree.nodes[0]
         self.assertIs(type(call), Call)
-        self.assertIs(type(call.callee), Expression)
+        self.assertIs(type(call.callee), VariableReference)
         self.assertIs(type(call.args), Args)
         self.assertTrue(type(arg) is Expression for arg in call.args.args)
+
+    def test_variable_reference(self):
+        token = Token("x", TokenType.IDENTIFIER, 0, 0)
+        syntax_tree = Parser([token]).parse()
+        variable_reference = syntax_tree.nodes[0]
+        self.assertIs(type(variable_reference), VariableReference)
+        self.assertEqual(variable_reference.variable_name, "x")
 
 
 if __name__ == '__main__':

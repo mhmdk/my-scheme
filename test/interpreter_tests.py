@@ -1,4 +1,4 @@
-from interpreter import Interpreter
+from interpreter import Interpreter, SchemeRuntimeError, Environment, SchemeNumber
 from schemeexpression import *
 import unittest
 
@@ -53,6 +53,20 @@ class InterpreterTests(unittest.TestCase):
         conditional = Conditional(BoolLiteral('#f'), NumberLiteral('2'), StringLiteral('"hello"'))
         conditional_result = self.interpreter.visit_conditional(conditional)
         self.assertEqual("hello", conditional_result.value)
+
+    def test_unbound_variable(self):
+        variable_reference = VariableReference('x')  # NumberLiteral('1')
+        with self.assertRaises(SchemeRuntimeError):
+            self.interpreter.visit_variable_reference(variable_reference)
+
+    def test_bound_variable(self):
+        variable_reference = VariableReference('x')
+        environment = Environment()
+        environment.add('x', SchemeNumber(1))
+        interpreter = Interpreter(environment)
+        value = interpreter.visit_variable_reference(variable_reference)
+        self.assertEqual(type(value), SchemeNumber)
+        self.assertEqual(value.value, 1)
 
 
 if __name__ == '__main__':

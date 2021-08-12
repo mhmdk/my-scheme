@@ -54,13 +54,40 @@ class SchemeList(SchemeObject):
         return f"( {' '.join(element.to_string() for element in self.elements)} )"
 
 
+class Environment:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.dictionary = {}
+
+    def get(self, name):
+        if name in self.dictionary.keys():
+            return self.dictionary[name]
+        if self.parent is not None:
+            return self.parent.get(name)
+        return None
+
+    def add(self, name, value=None):
+        self.dictionary[name] = value
+
+
+class SchemeRuntimeError(Exception):
+    def __init__(self, message=""):
+        self.message = message
+
+
 class Interpreter(SyntaxTreeVisitor):
+    def __init__(self, environment=None):
+        self.environment = Environment() if environment is None else environment
+
     def interpret_syntax_tree(self, syntax_tree):
         result = None
-        for expression in syntax_tree.nodes:
-            result = self.interpret_expression(expression)
-        # return the result of last expression
-        return result
+        try:
+            for expression in syntax_tree.nodes:
+                result = self.interpret_expression(expression)
+            # return the result of last expression
+            return result
+        except SchemeRuntimeError as error:
+            return SchemeString(error.message)
 
     def interpret_expression(self, expression):
         return expression.accept(self)
@@ -89,7 +116,7 @@ class Interpreter(SyntaxTreeVisitor):
         return SchemeString(literal)
 
     def visit_list(self, quoted_list):
-        return SchemeList(element.accept(self) for element in quoted_list.elements)
+        return SchemeList(self.interpret_expression(element) for element in quoted_list.elements)
 
     def visit_symbol(self, symbol):
         return SchemeSymbol(symbol.symbol)
@@ -100,3 +127,12 @@ class Interpreter(SyntaxTreeVisitor):
             return self.interpret_expression(
                 conditional.alternate) if conditional.alternate is not None else SchemeList()
         return self.interpret_expression(conditional.consequent)
+
+    def visit_variable_reference(self, variable_reference):
+        value = self.environment.get(variable_reference.variable_name)
+        if value is None:
+            self.raise_error(f"variable {variable_reference.variable_name} not found")
+        return value
+
+    def raise_error(self, message):
+        raise SchemeRuntimeError(message)

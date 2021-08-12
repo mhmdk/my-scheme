@@ -32,6 +32,9 @@ class SyntaxTreeVisitor:
     def visit_conditional(self, symbol):
         pass
 
+    def visit_variable_reference(self, variable_reference):
+        pass
+
 
 class Parser:
     def __init__(self, tokens):
@@ -64,8 +67,7 @@ class Parser:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
         elif current_token.type == TokenType.IDENTIFIER:
-            expr = Expression()
-            self.advance()
+            expr = self.variable_reference()
         else:
             self.raise_error(f"unexpected token {current_token.lexeme}", current_token)
         return expr
@@ -143,6 +145,10 @@ class Parser:
             args.add(self.expression())
         return Call(callee, args)
 
+    def variable_reference(self):
+        identifier = self.consume(TokenType.IDENTIFIER)
+        return VariableReference(identifier.lexeme)
+
     def raise_error(self, message, token=None):
         if token is not None:
             enriched_message = f"parse error at {token.lexeme},line {token.line_number}, column {token.column_number}: {message}"
@@ -175,6 +181,7 @@ class Parser:
     def consume(self, token_type):
         self.expect(token_type)
         self.advance()
+        return self.previous()
 
     def expect(self, token_type):
         if self.isend():
