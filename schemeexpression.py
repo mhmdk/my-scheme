@@ -49,3 +49,13 @@ class Symbol(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_symbol(self)
+
+
+class Conditional(Expression):
+    def __init__(self, test, consequent, alternate=None):
+        self.test = test
+        self.consequent = consequent
+        self.alternate = alternate
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_conditional(self)

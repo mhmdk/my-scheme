@@ -44,6 +44,16 @@ class InterpreterTests(unittest.TestCase):
         hello_result = self.interpreter.visit_symbol(hello_symbol)
         self.assertEqual('hello', hello_result.value)
 
+    def test_true_conditional(self):
+        conditional = Conditional(NumberLiteral('1'), NumberLiteral('2'), StringLiteral('"hello"'))
+        conditional_result = self.interpreter.visit_conditional(conditional)
+        self.assertEqual(2, conditional_result.value)
+
+    def test_false_conditional(self):
+        conditional = Conditional(BoolLiteral('#f'), NumberLiteral('2'), StringLiteral('"hello"'))
+        conditional_result = self.interpreter.visit_conditional(conditional)
+        self.assertEqual("hello", conditional_result.value)
+
 
 if __name__ == '__main__':
     unittest.main()

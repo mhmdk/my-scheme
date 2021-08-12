@@ -35,7 +35,7 @@ class SchemeString(SchemeObject):
         self.value = value
 
     def to_string(self):
-        return self.value
+        return f'"{self.value}"'
 
 
 class SchemeSymbol(SchemeObject):
@@ -93,3 +93,10 @@ class Interpreter(SyntaxTreeVisitor):
 
     def visit_symbol(self, symbol):
         return SchemeSymbol(symbol.symbol)
+
+    def visit_conditional(self, conditional):
+        conditional_value = self.interpret_expression(conditional.test)
+        if isinstance(conditional_value, SchemeBool) and not conditional_value.value:
+            return self.interpret_expression(
+                conditional.alternate) if conditional.alternate is not None else SchemeList()
+        return self.interpret_expression(conditional.consequent)

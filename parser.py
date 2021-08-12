@@ -29,6 +29,9 @@ class SyntaxTreeVisitor:
     def visit_symbol(self, symbol):
         pass
 
+    def visit_conditional(self, symbol):
+        pass
+
 
 class Parser:
     def __init__(self, tokens):
@@ -42,17 +45,28 @@ class Parser:
         while not self.isend():
             expr = self.expression()
             self.syntax_tree.add(expr)
-
         return self.syntax_tree
 
     def expression(self):
         current_token = self.current()
+        expr = None
         if isliteral(current_token, self.next()):
-            return self.literal()
+            expr = self.literal()
         elif current_token.type == TokenType.OPEN_PAREN:
+            self.advance()
+            current_token = self.current()
+            if current_token.type == TokenType.IF:
+                expr = self.conditional()
+            elif current_token.type == TokenType.LAMBDA:
+                pass
+            else:
+                pass  # function call
+            self.consume(TokenType.CLOSE_PAREN)
+        elif current_token.type == TokenType.IDENTIFIER:
             pass
         else:
             self.raise_error(f"unexpected token {current_token.lexeme}", current_token)
+        return expr
 
     def literal(self):
         token = self.current()
@@ -81,9 +95,7 @@ class Parser:
     def quote(self):
         self.consume(TokenType.OPEN_PAREN)
         self.consume(TokenType.QUOTE)
-        expr = None
-        while not self.isend() and self.current().type is not TokenType.CLOSE_PAREN:
-            expr = self.datum()
+        expr = self.datum()
         self.consume(TokenType.CLOSE_PAREN)
         return expr
 
@@ -108,19 +120,30 @@ class Parser:
     def list(self):
         self.consume(TokenType.OPEN_PAREN)
         scheme_list = QuotedList()
-        while not self.isend() and not self.current().type == TokenType.CLOSE_PAREN:
+        while not self.is_end_of_list():
             scheme_list.elements.append(self.datum())
         self.consume(TokenType.CLOSE_PAREN)
         return scheme_list
 
+    def conditional(self):
+        self.consume(TokenType.IF)
+        test = self.expression()
+        consequent = self.expression()
+        alternate = None
+        if not self.is_end_of_list():
+            alternate = self.expression()
+        return Conditional(test, consequent, alternate)
 
     def raise_error(self, message, token=None):
         if token is not None:
             enriched_message = f"parse error at {token.lexeme},line {token.line_number}, column {token.column_number}: {message}"
-        else :
+        else:
             enriched_message = message
-        self.errors.append(message)
-        #TODO where to continue ?
+        self.errors.append(enriched_message)
+        self.panic()
+
+    def is_end_of_list(self):
+        return self.isend() or self.current().type == TokenType.CLOSE_PAREN
 
     def haserrors(self):
         return len(self.errors) > 0
@@ -131,6 +154,9 @@ class Parser:
     def isend(self):
         return self.index >= self.number_of_tokens
 
+    def previous(self):
+        return self.tokens[self.index - 1] if self.index - 1 < self.number_of_tokens and self.index > 0 else None
+
     def current(self):
         return self.tokens[self.index] if self.index < self.number_of_tokens else None
 
@@ -138,7 +164,7 @@ class Parser:
         return self.tokens[self.index + 1] if self.index + 1 < self.number_of_tokens else None
 
     def consume(self, token_type):
-        assert not self.isend() and self.current().type == token_type
+        self.expect(token_type)
         self.advance()
 
     def expect(self, token_type):
@@ -149,6 +175,10 @@ class Parser:
             self.raise_error(f"unexpected token {current_token.lexeme}, expected token of type {token_type}",
                              current_token)
 
+    def panic(self):
+        while not self.is_end_of_list():
+            self.advance()
+
 
 def is_non_quote_literal(token):
     return token.type in [TokenType.BOOLEAN, TokenType.NUMBER, TokenType.CHARACTER, TokenType.STRING]
@@ -156,6 +186,4 @@ def is_non_quote_literal(token):
 
 def isliteral(current_token, next_token):
     return is_non_quote_literal(current_token) or \
-        current_token.type == TokenType.OPEN_PAREN and next_token.type == TokenType.QUOTE
-
-
+           current_token.type == TokenType.OPEN_PAREN and next_token is not None and next_token.type == TokenType.QUOTE

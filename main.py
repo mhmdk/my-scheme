@@ -13,23 +13,46 @@ def repl():
     while True:
         try:
             expression = input("-> ")
-            value = evaluate(expression)
+            syntax_tree = scan(expression)
+            value = evaluate(syntax_tree)
             scheme_print(value)
         except EOFError:
             break
+        except ScanException as scan_exception:
+            for error in scan_exception.errors:
+                print(error)
+        except ParseException as parse_exception:
+            for error in parse_exception.errors:
+                print(error)
 
 
-def evaluate(program):
+
+def scan(program):
     lexer = Lexer(program)
     tokens = lexer.scan()
     if lexer.haserrors():
-        return lexer.errors[0]
+        raise ScanException(lexer.errors)
     parser = Parser(tokens)
     syntax_tree = parser.parse()
     if parser.haserrors():
-        return parser.errors[0]
+        raise ParseException(parser.errors)
+    return syntax_tree
+
+
+def evaluate(syntax_tree):
     return Interpreter().interpret_syntax_tree(syntax_tree)
 
+
+class ParseException(Exception):
+    def __init__(self, errors):
+        super().__init__()
+        self.errors = errors
+
+
+class ScanException(Exception):
+    def __init__(self, errors):
+        super().__init__()
+        self.errors = errors
 
 if __name__ == '__main__':
     main()
