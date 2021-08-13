@@ -1,6 +1,9 @@
+from schemebuiltins import plus
 from interpreter import Interpreter, SchemeRuntimeError, Environment, SchemeNumber
 from schemeexpression import *
 import unittest
+
+from schemeobject import BuiltInProcedure
 
 
 class InterpreterTests(unittest.TestCase):
@@ -55,7 +58,7 @@ class InterpreterTests(unittest.TestCase):
         self.assertEqual("hello", conditional_result.value)
 
     def test_unbound_variable(self):
-        variable_reference = VariableReference('x')  # NumberLiteral('1')
+        variable_reference = VariableReference('x')
         with self.assertRaises(SchemeRuntimeError):
             self.interpreter.visit_variable_reference(variable_reference)
 
@@ -67,6 +70,30 @@ class InterpreterTests(unittest.TestCase):
         value = interpreter.visit_variable_reference(variable_reference)
         self.assertEqual(type(value), SchemeNumber)
         self.assertEqual(value.value, 1)
+
+    def test_builtin_procedure_call(self):
+        built_in_procedure = BuiltInProcedure(double_builtin_procedure, arity=1)
+        variable_reference = VariableReference('f')
+        environment = Environment()
+        environment.add('f', built_in_procedure)
+        interpreter = Interpreter(environment)
+        args = Args()
+        args.add(NumberLiteral('2'))
+        call = Call(variable_reference, args)
+        result = interpreter.visit_call(call)
+        self.assertEqual(result, SchemeNumber(4))
+
+    def test_builtin_variadic_procedure_call(self):
+        built_in_procedure = BuiltInProcedure(plus, variadic=True)
+        result = built_in_procedure.call([SchemeNumber(2), SchemeNumber(5)])
+        self.assertEqual(result, SchemeNumber(7))
+
+
+def double_builtin_procedure(x):
+    return SchemeNumber(x.value * 2)
+
+
+# define a mock python function and call it
 
 
 if __name__ == '__main__':

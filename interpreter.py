@@ -1,57 +1,5 @@
 from parser import SyntaxTreeVisitor
-
-
-class SchemeObject:
-    def to_string(self):
-        pass
-
-
-class SchemeNumber(SchemeObject):
-    def __init__(self, value):
-        self.value = value
-
-    def to_string(self):
-        return str(self.value)
-
-
-class SchemeChar(SchemeObject):
-    def __init__(self, value):
-        self.value = value
-
-    def to_string(self):
-        return self.value if self.value.isspace() else f"\\#{self.value}"
-
-
-class SchemeBool(SchemeObject):
-    def __init__(self, value):
-        self.value = value
-
-    def to_string(self):
-        return "#t" if self.value else "#f"
-
-
-class SchemeString(SchemeObject):
-    def __init__(self, value):
-        self.value = value
-
-    def to_string(self):
-        return f'"{self.value}"'
-
-
-class SchemeSymbol(SchemeObject):
-    def __init__(self, value):
-        self.value = value
-
-    def to_string(self):
-        return self.value
-
-
-class SchemeList(SchemeObject):
-    def __init__(self, elements=None):
-        self.elements = elements if elements is not None else []
-
-    def to_string(self):
-        return f"( {' '.join(element.to_string() for element in self.elements)} )"
+from schemeobject import *
 
 
 class Environment:
@@ -68,11 +16,6 @@ class Environment:
 
     def add(self, name, value=None):
         self.dictionary[name] = value
-
-
-class SchemeRuntimeError(Exception):
-    def __init__(self, message=""):
-        self.message = message
 
 
 class Interpreter(SyntaxTreeVisitor):
@@ -133,6 +76,13 @@ class Interpreter(SyntaxTreeVisitor):
         if value is None:
             self.raise_error(f"variable {variable_reference.variable_name} not found")
         return value
+
+    def visit_call(self, call):
+        procedure = self.interpret_expression(call.callee)
+        args = [self.interpret_expression(arg) for arg in call.args.args]
+        if not isinstance(procedure, SchemeProcedure):
+            self.raise_error(f"{procedure} is not a procedure")
+        return procedure.call(args)
 
     def raise_error(self, message):
         raise SchemeRuntimeError(message)

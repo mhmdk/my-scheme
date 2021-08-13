@@ -35,6 +35,9 @@ class SyntaxTreeVisitor:
     def visit_variable_reference(self, variable_reference):
         pass
 
+    def visit_call(self, call):
+        pass
+
 
 class Parser:
     def __init__(self, tokens):
@@ -123,11 +126,11 @@ class Parser:
 
     def list(self):
         self.consume(TokenType.OPEN_PAREN)
-        scheme_list = QuotedList()
+        quoted_list = QuotedList()
         while not self.is_end_of_list():
-            scheme_list.elements.append(self.datum())
+            quoted_list.elements.append(self.datum())
         self.consume(TokenType.CLOSE_PAREN)
-        return scheme_list
+        return quoted_list
 
     def conditional(self):
         self.consume(TokenType.IF)
@@ -169,14 +172,17 @@ class Parser:
     def isend(self):
         return self.index >= self.number_of_tokens
 
+    def get_at(self, index):
+        return self.tokens[index] if self.number_of_tokens > index >= 0 else None
+
     def previous(self):
-        return self.tokens[self.index - 1] if self.index - 1 < self.number_of_tokens and self.index > 0 else None
+        return self.get_at(self.index - 1)
 
     def current(self):
-        return self.tokens[self.index] if self.index < self.number_of_tokens else None
+        return self.get_at(self.index)
 
     def next(self):
-        return self.tokens[self.index + 1] if self.index + 1 < self.number_of_tokens else None
+        return self.get_at(self.index + 1)
 
     def consume(self, token_type):
         self.expect(token_type)

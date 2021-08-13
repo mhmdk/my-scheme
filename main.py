@@ -1,13 +1,20 @@
-from interpreter import Interpreter
+from interpreter import Interpreter, Environment
 from lexer import Lexer
 from parser import Parser
+from schemebuiltins import plus
+from schemeobject import BuiltInProcedure
 
+global_env = Environment()
+interpreter = Interpreter(global_env)
 
 def main():
+    init_global_environment()
     repl()
+
 
 def scheme_print(value):
     print(value.to_string())
+
 
 def repl():
     while True:
@@ -26,7 +33,6 @@ def repl():
                 print(error)
 
 
-
 def scan(program):
     lexer = Lexer(program)
     tokens = lexer.scan()
@@ -40,7 +46,7 @@ def scan(program):
 
 
 def evaluate(syntax_tree):
-    return Interpreter().interpret_syntax_tree(syntax_tree)
+    return interpreter.interpret_syntax_tree(syntax_tree)
 
 
 class ParseException(Exception):
@@ -53,6 +59,11 @@ class ScanException(Exception):
     def __init__(self, errors):
         super().__init__()
         self.errors = errors
+
+
+def init_global_environment():
+    global_env.add('+', BuiltInProcedure(plus, variadic=True))
+
 
 if __name__ == '__main__':
     main()
