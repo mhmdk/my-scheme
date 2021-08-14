@@ -192,10 +192,11 @@ class Parser:
     def expect(self, token_type):
         if self.isend():
             self.raise_error(f"unexpected end of file, expected token of type {token_type}")
-        current_token = self.current()
-        if not current_token.type == token_type:
-            self.raise_error(f"unexpected token {current_token.lexeme}, expected token of type {token_type}",
-                             current_token)
+        else:
+            current_token = self.current()
+            if not current_token.type == token_type:
+                self.raise_error(f"unexpected token {current_token.lexeme}, expected token of type {token_type}",
+                                 current_token)
 
     def panic(self):
         while not self.is_end_of_list():

@@ -1,13 +1,12 @@
 class SchemeObject:
-    def to_string(self):
-        pass
+    pass
 
 
 class SchemeNumber(SchemeObject):
     def __init__(self, value):
         self.value = value
 
-    def to_string(self):
+    def __str__(self):
         return str(self.value)
 
     def __eq__(self, other):
@@ -21,7 +20,7 @@ class SchemeChar(SchemeObject):
     def __eq__(self, other):
         return isinstance(other, SchemeChar) and self.value == other.value
 
-    def to_string(self):
+    def __str__(self):
         return self.value if self.value.isspace() else f"\\#{self.value}"
 
 
@@ -32,7 +31,7 @@ class SchemeBool(SchemeObject):
     def __eq__(self, other):
         return isinstance(other, SchemeBool) and self.value == other.value
 
-    def to_string(self):
+    def __str__(self):
         return "#t" if self.value else "#f"
 
 
@@ -43,7 +42,7 @@ class SchemeString(SchemeObject):
     def __eq__(self, other):
         return isinstance(other, SchemeString) and self.value == other.value
 
-    def to_string(self):
+    def __str__(self):
         return f'"{self.value}"'
 
 
@@ -54,7 +53,7 @@ class SchemeSymbol(SchemeObject):
     def __eq__(self, other):
         return isinstance(other, SchemeSymbol) and self.value == other.value
 
-    def to_string(self):
+    def __str__(self):
         return self.value
 
 
@@ -64,11 +63,14 @@ class SchemeList(SchemeObject):
         if iterable is not None:
             self._elements.extend(iterable)
 
-    def to_string(self):
-        return f"( {' '.join(element.to_string() for element in self._elements)} )"
+    def __str__(self):
+        return f"( {' '.join(str(element) for element in self._elements)} )"
 
     def __iter__(self):
         return iter(self._elements)
+
+    def size(self):
+        return len(self._elements)
 
 
 class SchemeProcedure(SchemeObject):
@@ -81,7 +83,7 @@ class SchemeProcedure(SchemeObject):
         else:
             self.arity = arity if arity is not None else 0
 
-    def to_string(self):
+    def __str__(self):
         return f"procedure {self}"
 
     def call(self, args):
@@ -90,7 +92,8 @@ class SchemeProcedure(SchemeObject):
         elif len(args) == self.arity:
             return self.docall(args)
         else:
-            raise SchemeRuntimeError(f"procedure expects {self.arity} arguments, {len(args)} given")
+            raise SchemeRuntimeError(
+                f"procedure expects {self.arity} argument {'s' if self.arity > 1 else ''}, {len(args)} given")
 
     def docall(self, args):
         pass
@@ -101,7 +104,7 @@ class BuiltInProcedure(SchemeProcedure):
         super().__init__(kwargs)
         self.implementation = implementation
 
-    def to_string(self):
+    def __str__(self):
         return f"built in procedure {self}"
 
     def docall(self, args):
@@ -114,7 +117,7 @@ class UserDefinedProcedure(SchemeObject):
         self.formals = formals
         self.body = body
 
-    def to_string(self):
+    def __str__(self):
         return f"scheme user defined procedure {self}"
 
 

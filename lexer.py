@@ -229,7 +229,7 @@ class Lexer:
 
     def issubsequent(self):
         current_char = self.text[self.current_index]
-        return current_char.isalpha() or current_char.isdigit() or current_char in ['+', '-', '.']
+        return self.isinitial() or current_char.isdigit() or current_char in ['+', '-', '.']
 
     def ispeculiaridentifier(self):
         return self.text[self.current_index] in ['+', '-'] and self.isnextdelimiter()
