@@ -72,9 +72,12 @@ class SchemeList(SchemeObject):
     def size(self):
         return len(self._elements)
 
+    def car(self):
+        return self._elements[0]
+
 
 class SchemeProcedure(SchemeObject):
-    def __init__(self, kwargs):
+    def __init__(self, **kwargs):
         is_variadic = kwargs.get('variadic')
         arity = kwargs.get('arity')
         self.is_variadic = is_variadic if is_variadic is not None else False
@@ -86,39 +89,28 @@ class SchemeProcedure(SchemeObject):
     def __str__(self):
         return f"procedure {self}"
 
-    def call(self, args):
-        if self.is_variadic:
-            return self.docall([SchemeList(args)])
-        elif len(args) == self.arity:
-            return self.docall(args)
-        else:
-            raise SchemeRuntimeError(
-                f"procedure expects {self.arity} argument {'s' if self.arity > 1 else ''}, {len(args)} given")
-
-    def docall(self, args):
-        pass
-
 
 class BuiltInProcedure(SchemeProcedure):
     def __init__(self, implementation, **kwargs):
-        super().__init__(kwargs)
+        super().__init__(**kwargs)
         self.implementation = implementation
 
     def __str__(self):
-        return f"built in procedure {self}"
+        return f"built in procedure"
 
-    def docall(self, args):
+    def call(self, args):
         return self.implementation(*args)
 
 
-class UserDefinedProcedure(SchemeObject):
-    def __init__(self, formals, body):
-        super().__init__(arity=formals.size)
-        self.formals = formals
+class UserDefinedProcedure(SchemeProcedure):
+    def __init__(self, formal_parameters, body):
+        super().__init__(arity=len(formal_parameters.fixed_parameters), variadic=formal_parameters.has_list_parameter)
+        self.parameters = formal_parameters.fixed_parameters if not formal_parameters.has_list_parameter else [
+            formal_parameters.list_parameter_name]
         self.body = body
 
     def __str__(self):
-        return f"scheme user defined procedure {self}"
+        return f"scheme user defined procedure"
 
 
 class SchemeRuntimeError(Exception):

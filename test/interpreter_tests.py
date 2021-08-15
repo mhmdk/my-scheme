@@ -3,7 +3,7 @@ from interpreter import Interpreter, SchemeRuntimeError, Environment, SchemeNumb
 from schemeexpression import *
 import unittest
 
-from schemeobject import BuiltInProcedure
+from schemeobject import BuiltInProcedure, SchemeList, UserDefinedProcedure
 
 
 class InterpreterTests(unittest.TestCase):
@@ -85,15 +85,56 @@ class InterpreterTests(unittest.TestCase):
 
     def test_builtin_variadic_procedure_call(self):
         built_in_procedure = BuiltInProcedure(plus, variadic=True)
-        result = built_in_procedure.call([SchemeNumber(2), SchemeNumber(5)])
+        result = built_in_procedure.call([SchemeList([SchemeNumber(2), SchemeNumber(5)])])
         self.assertEqual(result, SchemeNumber(7))
+
+    def test_user_defined_variadic_procedure_call(self):
+        formals = FormalParameters()
+        formals.append_parameter("x")
+        formals.append_parameter("y")
+        scheme_lambda = Lambda(formals, [VariableReference('x'), VariableReference('y')])
+        arguments = Args()
+        arguments.add(NumberLiteral('1'))
+        arguments.add(NumberLiteral('2'))
+        call = Call(scheme_lambda, arguments)
+        result = self.interpreter.visit_call(call)
+        self.assertEqual(result, SchemeNumber(2))
+
+    def test_user_defined_variadic_procedure_call(self):
+        formals = FormalParameters()
+        formals.set_list_parameter("x")
+        scheme_lambda = Lambda(formals, [VariableReference('x')])
+        arguments = Args()
+        arguments.add(NumberLiteral('1'))
+        arguments.add(NumberLiteral('2'))
+        call = Call(scheme_lambda, arguments)
+        result = self.interpreter.visit_call(call)
+        self.assertEqual(type(result), SchemeList)
+        self.assertEqual(result.car(), SchemeNumber(1))
+
+    def test_variadic_lambda(self):
+        formals = FormalParameters()
+        formals.set_list_parameter("x")
+        scheme_lambda = Lambda(formals, [NumberLiteral('1')])
+        procedure = self.interpreter.visit_lambda(scheme_lambda)
+        self.assertEqual(type(procedure), UserDefinedProcedure)
+        self.assertEqual(procedure.is_variadic, True)
+        self.assertEqual(procedure.parameters, ['x'])
+
+    def test_fixed_parameters_lambda(self):
+        formals = FormalParameters()
+        formals.append_parameter("x")
+        formals.append_parameter("y")
+        scheme_lambda = Lambda(formals, [NumberLiteral('1')])
+        procedure = self.interpreter.visit_lambda(scheme_lambda)
+        self.assertEqual(type(procedure), UserDefinedProcedure)
+        self.assertEqual(procedure.arity, 2)
+        self.assertEqual(procedure.is_variadic, False)
+        self.assertEqual(procedure.parameters, ['x', 'y'])
 
 
 def double_builtin_procedure(x):
     return SchemeNumber(x.value * 2)
-
-
-# define a mock python function and call it
 
 
 if __name__ == '__main__':

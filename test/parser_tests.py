@@ -22,6 +22,12 @@ def build_quoted_list(literals):
     return quoted_list
 
 
+def build_lambda(parameter_tokens, body_tokens):
+    tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.LAMBDA]) + parameter_tokens + body_tokens + \
+             build_tokens_of_types([TokenType.CLOSE_PAREN])
+    return tokens
+
+
 def build_tokens_of_types(token_types):
     return [Token("", token_type, 0, 0) for token_type in token_types]
 
@@ -162,6 +168,39 @@ class ParserTest(unittest.TestCase):
         variable_reference = syntax_tree.nodes[0]
         self.assertIs(type(variable_reference), VariableReference)
         self.assertEqual(variable_reference.variable_name, "x")
+
+    def test_lambda(self):
+        tokens = build_lambda(
+            parameter_tokens=[Token("(", TokenType.OPEN_PAREN, 0, 0), Token("x", TokenType.IDENTIFIER, 0, 0),
+                              Token(")", TokenType.CLOSE_PAREN, 0, 0)],
+            body_tokens=[Token("2", TokenType.NUMBER, 0, 0)])
+        syntax_tree = Parser(tokens).parse()
+        procedure = syntax_tree.nodes[0]
+        self.assertIs(type(procedure), Lambda)
+        self.assertEqual(procedure.formals.fixed_parameters, ["x"])
+        self.assertFalse(procedure.formals.has_list_parameter)
+        self.assertEqual(len(procedure.body), 1)
+        self.assertEqual(type(procedure.body[0]), NumberLiteral)
+
+    def test_lambda_with_variadic_parameter(self):
+        tokens = build_lambda(
+            parameter_tokens=[Token("x", TokenType.IDENTIFIER, 0, 0)],
+            body_tokens=[Token("2", TokenType.NUMBER, 0, 0), Token("2", TokenType.NUMBER, 0, 0),
+                         Token("#\\y", TokenType.CHARACTER, 0, 0)])
+        syntax_tree = Parser(tokens).parse()
+        procedure = syntax_tree.nodes[0]
+        self.assertIs(type(procedure), Lambda)
+        self.assertEqual(procedure.formals.fixed_parameters, [])
+        self.assertTrue(procedure.formals.has_list_parameter)
+        self.assertEqual(procedure.formals.list_parameter_name, "x")
+        self.assertEqual(len(procedure.body), 3)
+
+    def test_lambda_with_empty_body(self):
+        tokens = build_lambda(parameter_tokens=[Token("x", TokenType.IDENTIFIER, 0, 0)], body_tokens=[])
+        parser = Parser(tokens)
+        parser.parse()
+        self.assertTrue(parser.haserrors())
+        self.assertIn("empty body", parser.errors[0])
 
 
 if __name__ == '__main__':

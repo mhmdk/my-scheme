@@ -62,7 +62,7 @@ class Conditional(Expression):
 
 
 class Args():
-    #TODO can this be replaced by a quoted list?
+    # TODO can this be replaced by a quoted list?
     def __init__(self):
         self.args = []
 
@@ -85,3 +85,26 @@ class VariableReference(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_variable_reference(self)
+
+
+class FormalParameters:
+    def __init__(self):
+        self.fixed_parameters = []
+        self.has_list_parameter = False
+        self.list_parameter_name = ''
+
+    def set_list_parameter(self, name):
+        self.has_list_parameter = True
+        self.list_parameter_name = name
+
+    def append_parameter(self, name):
+        self.fixed_parameters.append(name)
+
+
+class Lambda(Expression):
+    def __init__(self, formals, body):
+        self.formals = formals
+        self.body = body
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_lambda(self)

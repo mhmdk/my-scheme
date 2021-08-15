@@ -79,10 +79,43 @@ class Interpreter(SyntaxTreeVisitor):
 
     def visit_call(self, call):
         procedure = self.interpret_expression(call.callee)
-        args = [self.interpret_expression(arg) for arg in call.args.args]
         if not isinstance(procedure, SchemeProcedure):
             self.raise_error(f"{procedure} is not a procedure")
-        return procedure.call(args)
+        arguments_values = [self.interpret_expression(arg) for arg in call.args.args]
+        args = self.prepare_args(procedure, arguments_values)
+        if isinstance(procedure, BuiltInProcedure):
+            return procedure.call(args)
+        else:
+            return self.interpret_scheme_procedure_call(procedure, args)
+
+    def visit_lambda(self, lambda_expression):
+        return UserDefinedProcedure(lambda_expression.formals, lambda_expression.body)
+
+    def interpret_scheme_procedure_call(self, procedure, args):
+        call_environment = self.prepare_call_environment(args, procedure)
+        self.environment = call_environment
+        value = None
+        for expression in procedure.body:
+            value = self.interpret_expression(expression)
+
+        self.environment = self.environment.parent
+        return value
+
+    def prepare_call_environment(self, args, procedure):
+        call_environment = Environment(self.environment)
+        for parameter, argument in zip(procedure.parameters, args):
+            call_environment.add(parameter, argument)
+        return call_environment
+
+    @staticmethod
+    def prepare_args(procedure, args):
+        if procedure.is_variadic:
+            return [SchemeList(args)]
+        elif len(args) == procedure.arity:
+            return args
+        else:
+            raise SchemeRuntimeError(
+                f"procedure expects {procedure.arity} argument {'s' if procedure.arity > 1 else ''}, {len(args)} given")
 
     def raise_error(self, message):
         raise SchemeRuntimeError(message)
