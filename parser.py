@@ -77,6 +77,8 @@ class Parser:
                 expr = self.conditional()
             elif self.current_token_has_type(TokenType.LAMBDA):
                 expr = self.scheme_lambda()
+            elif self.current_token_has_type(TokenType.SET):
+                expr = self.assignment()
             else:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
@@ -219,6 +221,12 @@ class Parser:
         body = self.lambda_body()
         return Definition(name, Lambda(formals, body))
 
+    def assignment(self):
+        self.consume(TokenType.SET)
+        name = self.consume(TokenType.IDENTIFIER).lexeme
+        expression = self.expression()
+        return Assignment(name, expression)
+
     def raise_error(self, message, token=None):
         if token is not None:
             enriched_message = f"parse error at {token.lexeme},line {token.line_number}, column {token.column_number}: {message}"
@@ -292,3 +300,4 @@ class Parser:
         if current_token is None or next_token is None:
             return False
         return current_token.type is current_token_type and next_token.type is next_token_type
+

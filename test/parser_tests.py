@@ -234,6 +234,16 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(type(definition.expression.body[0]), NumberLiteral)
         self.assertEqual(definition.expression.formals.fixed_parameters, ['a', 'b'])
 
+    def test_assignment(self):
+        tokens = [Token('(', TokenType.OPEN_PAREN, 0, 0), Token('set!', TokenType.SET, 0, 0),
+                  Token('x', TokenType.IDENTIFIER, 0, 0), Token('1', TokenType.NUMBER, 0, 0),
+                  Token(')', TokenType.OPEN_PAREN, 0, 0)]
+        syntax_tree = Parser(tokens).parse()
+        assignment = syntax_tree.nodes[0]
+        self.assertIs(type(assignment), Assignment)
+        self.assertEqual(assignment.name, 'x')
+        self.assertEqual(type(assignment.expression), NumberLiteral)
+
 
 if __name__ == '__main__':
     unittest.main()

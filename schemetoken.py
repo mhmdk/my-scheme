@@ -39,7 +39,7 @@ keywords_map = {
     "quote": TokenType.QUOTE,
     "lambda": TokenType.LAMBDA,
     "if": TokenType.IF,
-    "set": TokenType.SET,
+    "set!": TokenType.SET,
     "begin": TokenType.BEGIN,
     "cond": TokenType.COND,
     "and": TokenType.AND,

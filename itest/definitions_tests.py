@@ -16,3 +16,8 @@ class DefinitionTests(ExpressionTest):
         expression = "(define (add a b) (+ a b)) (add 1 2)"
         expected = "3"
         self.assertEqual(expected, self.evaluate(expression))
+
+    def test_mutation(self):
+        expression = "(define (add a b) (set! a 0) (+ a b)) (add 100 2)"
+        expected = "2"
+        self.assertEqual(expected, self.evaluate(expression))

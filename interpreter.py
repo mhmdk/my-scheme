@@ -17,6 +17,12 @@ class Environment:
     def add(self, name, value):
         self.dictionary[name] = value
 
+    def set(self, name, value):
+        if name in self.dictionary.keys():
+            self.dictionary[name] = value
+        elif self.parent is not None:
+            self.parent.set(name, value)
+
 
 class Interpreter(SyntaxTreeVisitor):
     def __init__(self, environment=None):
@@ -95,7 +101,10 @@ class Interpreter(SyntaxTreeVisitor):
         self.environment.add(definition.name, self.interpret_expression(definition.expression))
 
     def visit_assignment(self, assignment):
-        pass
+        old_value = self.environment.get(assignment.name)
+        if old_value is None:
+            raise SchemeRuntimeError(f"variable {assignment.name} not bound")
+        self.environment.set(assignment.name, self.interpret_expression(assignment.expression))
 
     def interpret_scheme_procedure_call(self, procedure, args):
         call_environment = self.prepare_call_environment(args, procedure)

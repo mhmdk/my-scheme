@@ -142,6 +142,20 @@ class InterpreterTests(unittest.TestCase):
         env = interpreter.environment
         self.assertEqual(env.get('x'), SchemeNumber(1))
 
+    def test_assignment(self):
+        assignment = Assignment('x', NumberLiteral('10'))
+        interpreter = interpreter_with_variables(x=SchemeNumber(0))
+        interpreter.visit_assignment(assignment)
+        env = interpreter.environment
+        self.assertEqual(env.get('x'), SchemeNumber(10))
+
+    def test_assignment_of_unbound_variable(self):
+        assignment = Assignment('x', NumberLiteral('10'))
+        interpreter = interpreter_with_variables()
+        with self.assertRaises(SchemeRuntimeError) as context:
+            interpreter.visit_assignment(assignment)
+        self.assertIn(context.exception.message, "variable x not bound")
+
 
 def double_builtin_procedure(x):
     return SchemeNumber(x.value * 2)
