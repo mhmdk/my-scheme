@@ -150,9 +150,11 @@ def plus(list_of_numbers):
 
 
 @return_scheme_number
-@takes_scheme_numbers()
+@takes_scheme_numbers('-', 1)
 def minus(list_of_numbers):
-    return functools.reduce(operator.sub, [number.value for number in list_of_numbers], 0)
+    if list_of_numbers.size() == 1:
+        return - list_of_numbers.car().value
+    return functools.reduce(operator.sub, [number.value for number in list_of_numbers])
 
 
 @return_scheme_number
@@ -164,6 +166,8 @@ def multiply(list_of_numbers):
 @return_scheme_number
 @takes_scheme_numbers('/', 1)
 def divide(list_of_numbers):
+    if list_of_numbers.size() == 1:
+        return 1 / list_of_numbers.car().value
     return functools.reduce(operator.truediv, [number.value for number in list_of_numbers])
 
 

@@ -8,6 +8,26 @@ class SchemeBuiltinsTest(ExpressionTest):
         expected = "22.0"
         self.assertEqual(expected, self.evaluate(expression))
 
+    def test_subtract_two_numbers(self):
+        expression = "(- 6 1)"
+        expected = "5"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_minus_with_one_arg(self):
+        expression = "(- 1)"
+        expected = "-1"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_divide_two_numbers(self):
+        expression = "(/ 6 2)"
+        expected = "3.0"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_division_with_one_arg(self):
+        expression = "(/ 2)"
+        expected = "0.5"
+        self.assertEqual(expected, self.evaluate(expression))
+
     def test_number_comparison(self):
         self.assertEqual("#t", self.evaluate("(< 1 2 3.2 6 )"))
         self.assertEqual("#f", self.evaluate("(<= 2 1)"))
