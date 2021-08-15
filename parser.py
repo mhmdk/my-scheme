@@ -41,6 +41,12 @@ class SyntaxTreeVisitor:
     def visit_lambda(self, lambda_expression):
         pass
 
+    def visit_definition(self, definition):
+        pass
+
+    def visit_assignment(self, assignment):
+        pass
+
 
 class Parser:
     def __init__(self, tokens):
@@ -52,7 +58,10 @@ class Parser:
 
     def parse(self):
         while not self.isend():
-            expr = self.expression()
+            if self.is_definition():
+                expr = self.definition()
+            else:
+                expr = self.expression()
             self.syntax_tree.add(expr)
         return self.syntax_tree
 
@@ -60,7 +69,7 @@ class Parser:
         if self.isend():
             self.raise_error(f"expected expression")
         expr = None
-        if self.isliteral():
+        if self.is_literal():
             expr = self.literal()
         elif self.current_token_has_type(TokenType.OPEN_PAREN):
             self.advance()
@@ -184,6 +193,32 @@ class Parser:
             self.raise_error(f"lambda has empty body", self.previous())
         return expressions
 
+    def definition(self):
+        self.consume(TokenType.OPEN_PAREN)
+        self.consume(TokenType.DEFINE)
+        if self.current_token_has_type(TokenType.OPEN_PAREN):
+            definition = self.procedure_definition()
+        else:
+            definition = self.variable_definition()
+        self.consume(TokenType.CLOSE_PAREN)
+        return definition
+
+    def variable_definition(self):
+        name = self.consume(TokenType.IDENTIFIER).lexeme
+        expression = self.expression()
+        return Definition(name, expression)
+
+    def procedure_definition(self):
+        self.consume(TokenType.OPEN_PAREN)
+        name = self.consume(TokenType.IDENTIFIER).lexeme
+        formals = FormalParameters()
+        while not self.is_end_of_list():
+            parameter = self.consume(TokenType.IDENTIFIER)
+            formals.append_parameter(parameter.lexeme)
+        self.consume(TokenType.CLOSE_PAREN)
+        body = self.lambda_body()
+        return Definition(name, Lambda(formals, body))
+
     def raise_error(self, message, token=None):
         if token is not None:
             enriched_message = f"parse error at {token.lexeme},line {token.line_number}, column {token.column_number}: {message}"
@@ -221,8 +256,9 @@ class Parser:
 
     def consume(self, token_type):
         self.expect(token_type)
+        token = self.current()
         self.advance()
-        return self.previous()
+        return token
 
     def expect(self, token_type):
         if self.isend():
@@ -237,7 +273,7 @@ class Parser:
         while not self.is_end_of_list():
             self.advance()
 
-    def isliteral(self):
+    def is_literal(self):
         return self.is_non_quote_literal() or self.is_quote()
 
     def is_non_quote_literal(self):
@@ -245,8 +281,14 @@ class Parser:
                                            TokenType.STRING)
 
     def is_quote(self):
+        return self.next_two_tokens_have_types(TokenType.OPEN_PAREN, TokenType.QUOTE)
+
+    def is_definition(self):
+        return self.next_two_tokens_have_types(TokenType.OPEN_PAREN, TokenType.DEFINE)
+
+    def next_two_tokens_have_types(self, current_token_type, next_token_type):
         next_token = self.next()
         current_token = self.current()
         if current_token is None or next_token is None:
             return False
-        return current_token.type is TokenType.OPEN_PAREN and next_token.type is TokenType.QUOTE
+        return current_token.type is current_token_type and next_token.type is next_token_type

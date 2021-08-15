@@ -22,3 +22,9 @@ class LambdaTests(ExpressionTest):
     def test_lambda_with_multiple_expressions(self):
         expression = "((lambda (x y) (+ x y 1) #t) 10 20)"
         self.assertEqual("#t", self.evaluate(expression))
+
+    def test_lambda_with_conditional(self):
+        should_return_first_arg = "((lambda (x y) (if (> x 0) x y) ) 10 20)"
+        should_return_second_arg = "((lambda (x y) (if (> x 0) x y) ) -10 20)"
+        self.assertEqual("10", self.evaluate(should_return_first_arg))
+        self.assertEqual("20", self.evaluate(should_return_second_arg))

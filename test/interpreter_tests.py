@@ -6,6 +6,13 @@ import unittest
 from schemeobject import BuiltInProcedure, SchemeList, UserDefinedProcedure
 
 
+def interpreter_with_variables(**kwargs):
+    env = Environment()
+    for key, value in kwargs.items():
+        env.add(key, value)
+    return Interpreter(env)
+
+
 class InterpreterTests(unittest.TestCase):
     def setUp(self):
         self.interpreter = Interpreter()
@@ -64,9 +71,7 @@ class InterpreterTests(unittest.TestCase):
 
     def test_bound_variable(self):
         variable_reference = VariableReference('x')
-        environment = Environment()
-        environment.add('x', SchemeNumber(1))
-        interpreter = Interpreter(environment)
+        interpreter = interpreter_with_variables(x=SchemeNumber(1))
         value = interpreter.visit_variable_reference(variable_reference)
         self.assertEqual(type(value), SchemeNumber)
         self.assertEqual(value.value, 1)
@@ -74,9 +79,7 @@ class InterpreterTests(unittest.TestCase):
     def test_builtin_procedure_call(self):
         built_in_procedure = BuiltInProcedure(double_builtin_procedure, arity=1)
         variable_reference = VariableReference('f')
-        environment = Environment()
-        environment.add('f', built_in_procedure)
-        interpreter = Interpreter(environment)
+        interpreter = interpreter_with_variables(f=built_in_procedure)
         args = Args()
         args.add(NumberLiteral('2'))
         call = Call(variable_reference, args)
@@ -131,6 +134,13 @@ class InterpreterTests(unittest.TestCase):
         self.assertEqual(procedure.arity, 2)
         self.assertEqual(procedure.is_variadic, False)
         self.assertEqual(procedure.parameters, ['x', 'y'])
+
+    def test_definition(self):
+        definition = Definition('x', NumberLiteral('1'))
+        interpreter = interpreter_with_variables()
+        interpreter.visit_definition(definition)
+        env = interpreter.environment
+        self.assertEqual(env.get('x'), SchemeNumber(1))
 
 
 def double_builtin_procedure(x):

@@ -32,6 +32,20 @@ def build_tokens_of_types(token_types):
     return [Token("", token_type, 0, 0) for token_type in token_types]
 
 
+def build_variable_definition(name, expression_tokens):
+    return [Token("(", TokenType.OPEN_PAREN, 0, 0), Token("", TokenType.DEFINE, 0, 0),
+            Token(name, TokenType.IDENTIFIER, 0, 0)] + expression_tokens + [Token(")", TokenType.CLOSE_PAREN, 0, 0)]
+
+
+def build_procedure_definition(name, parameters, expression_tokens):
+    return [Token("(", TokenType.OPEN_PAREN, 0, 0), Token("", TokenType.DEFINE, 0, 0),
+            Token("(", TokenType.OPEN_PAREN, 0, 0),
+            Token(name, TokenType.IDENTIFIER, 0, 0)] + [Token(parameter, TokenType.IDENTIFIER, 0, 0) for parameter in
+                                                        parameters] + [
+               Token(")", TokenType.CLOSE_PAREN, 0, 0)] + expression_tokens + [
+               Token(")", TokenType.CLOSE_PAREN, 0, 0)]
+
+
 class ParserTest(unittest.TestCase):
 
     def test_number_literal(self):
@@ -201,6 +215,24 @@ class ParserTest(unittest.TestCase):
         parser.parse()
         self.assertTrue(parser.haserrors())
         self.assertIn("empty body", parser.errors[0])
+
+    def test_variable_definition(self):
+        tokens = build_variable_definition('x', [Token('1', TokenType.NUMBER, 0, 0)])
+        syntax_tree = Parser(tokens).parse()
+        definition = syntax_tree.nodes[0]
+        self.assertIs(type(definition), Definition)
+        self.assertEqual(definition.name, 'x')
+        self.assertEqual(type(definition.expression), NumberLiteral)
+
+    def test_procedure_definition(self):
+        tokens = build_procedure_definition('x', ['a', 'b'], [Token('1', TokenType.NUMBER, 0, 0)])
+        syntax_tree = Parser(tokens).parse()
+        definition = syntax_tree.nodes[0]
+        self.assertIs(type(definition), Definition)
+        self.assertEqual(definition.name, 'x')
+        self.assertEqual(type(definition.expression), Lambda)
+        self.assertEqual(type(definition.expression.body[0]), NumberLiteral)
+        self.assertEqual(definition.expression.formals.fixed_parameters, ['a', 'b'])
 
 
 if __name__ == '__main__':

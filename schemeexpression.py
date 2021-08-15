@@ -108,3 +108,21 @@ class Lambda(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_lambda(self)
+
+
+class Definition(Expression):
+    def __init__(self, variable, expression):
+        self.name = variable
+        self.expression = expression
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_definition(self)
+
+
+class Assignment(Expression):
+    def __init__(self, variable, expression):
+        self.name = variable
+        self.expression = expression
+
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_assignment(self)

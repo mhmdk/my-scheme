@@ -14,7 +14,7 @@ class Environment:
             return self.parent.get(name)
         return None
 
-    def add(self, name, value=None):
+    def add(self, name, value):
         self.dictionary[name] = value
 
 
@@ -90,6 +90,12 @@ class Interpreter(SyntaxTreeVisitor):
 
     def visit_lambda(self, lambda_expression):
         return UserDefinedProcedure(lambda_expression.formals, lambda_expression.body)
+
+    def visit_definition(self, definition):
+        self.environment.add(definition.name, self.interpret_expression(definition.expression))
+
+    def visit_assignment(self, assignment):
+        pass
 
     def interpret_scheme_procedure_call(self, procedure, args):
         call_environment = self.prepare_call_environment(args, procedure)
