@@ -48,7 +48,7 @@ assignment -> (set! identifier expression)
 
 
 to consider adding:  
-derived expressions (ex :and, or, cond, let, begin, case),
+derived expressions :cond, and, or, let, let*, letrec, begin, delay
 dot notation for pairs, including pairs in quoted expressions and formal parameters.  
 for a list of primitive and derived expressions : 
 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4
@@ -57,3 +57,59 @@ https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4
 see also:  
 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.3  
 https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5  
+
+
+## Standard Procedures:
+
+* Done:
+    * Number Operation: 
+      - number? 
+      - integer? 
+      - <
+      - <= 
+      - \> 
+      - \>= 
+      - = 
+      - \+ 
+      - \- 
+      - \/ 
+      - \* 
+      - zero? 
+      - positive? 
+      - negative? 
+      - odd? 
+      - even? 
+      - max 
+      - min 
+      - abs
+* To Do:
+    * Equivalence Predicates:
+      - eqv?
+      - eq?
+      - equal?
+    * Booleans:
+        - not
+        - boolean?
+    * Pairs and Lists:
+        - pair?
+        - cons
+        - car
+        - cdr
+        - set-car!
+        - set-cdr!
+        - null?
+        - list?
+        - list
+        - length
+        - append
+    * Control Features
+        - procedure?
+        - apply
+        - map
+        - for-each
+        - force
+        - make-promise
+            
+    
+for a complete list of possible procedures: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_chap_6
+        

@@ -103,11 +103,12 @@ class BuiltInProcedure(SchemeProcedure):
 
 
 class UserDefinedProcedure(SchemeProcedure):
-    def __init__(self, formal_parameters, body):
+    def __init__(self, formal_parameters, body, surrounding_environment):
         super().__init__(arity=len(formal_parameters.fixed_parameters), variadic=formal_parameters.has_list_parameter)
         self.parameters = formal_parameters.fixed_parameters if not formal_parameters.has_list_parameter else [
             formal_parameters.list_parameter_name]
         self.body = body
+        self.environment = surrounding_environment
 
     def __str__(self):
         return f"scheme user defined procedure"

@@ -95,7 +95,7 @@ class Interpreter(SyntaxTreeVisitor):
             return self.interpret_scheme_procedure_call(procedure, args)
 
     def visit_lambda(self, lambda_expression):
-        return UserDefinedProcedure(lambda_expression.formals, lambda_expression.body)
+        return UserDefinedProcedure(lambda_expression.formals, lambda_expression.body, self.environment)
 
     def visit_definition(self, definition):
         self.environment.add(definition.name, self.interpret_expression(definition.expression))
@@ -108,16 +108,17 @@ class Interpreter(SyntaxTreeVisitor):
 
     def interpret_scheme_procedure_call(self, procedure, args):
         call_environment = self.prepare_call_environment(args, procedure)
+        old_environment = self.environment
         self.environment = call_environment
         value = None
         for expression in procedure.body:
             value = self.interpret_expression(expression)
 
-        self.environment = self.environment.parent
+        self.environment = old_environment
         return value
 
     def prepare_call_environment(self, args, procedure):
-        call_environment = Environment(self.environment)
+        call_environment = Environment(procedure.environment)
         for parameter, argument in zip(procedure.parameters, args):
             call_environment.add(parameter, argument)
         return call_environment

@@ -280,6 +280,7 @@ class Parser:
     def panic(self):
         while not self.is_end_of_list():
             self.advance()
+        self.advance()
 
     def is_literal(self):
         return self.is_non_quote_literal() or self.is_quote()
