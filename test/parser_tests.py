@@ -45,6 +45,8 @@ def build_procedure_definition(name, parameters, expression_tokens):
                Token(")", TokenType.CLOSE_PAREN, 0, 0)] + expression_tokens + [
                Token(")", TokenType.CLOSE_PAREN, 0, 0)]
 
+def types(objects):
+    return [type(arg) for arg in objects]
 
 class ParserTest(unittest.TestCase):
 
@@ -174,7 +176,7 @@ class ParserTest(unittest.TestCase):
         self.assertIs(type(call), Call)
         self.assertIs(type(call.callee), VariableReference)
         self.assertIs(type(call.args), Args)
-        self.assertTrue(type(arg) is Expression for arg in call.args.args)
+        self.assertTrue(object_type is Expression for object_type in types(call.args.args))
 
     def test_variable_reference(self):
         token = Token("x", TokenType.IDENTIFIER, 0, 0)
@@ -237,12 +239,26 @@ class ParserTest(unittest.TestCase):
     def test_assignment(self):
         tokens = [Token('(', TokenType.OPEN_PAREN, 0, 0), Token('set!', TokenType.SET, 0, 0),
                   Token('x', TokenType.IDENTIFIER, 0, 0), Token('1', TokenType.NUMBER, 0, 0),
-                  Token(')', TokenType.OPEN_PAREN, 0, 0)]
+                  Token(')', TokenType.CLOSE_PAREN, 0, 0)]
         syntax_tree = Parser(tokens).parse()
         assignment = syntax_tree.nodes[0]
         self.assertIs(type(assignment), Assignment)
         self.assertEqual(assignment.name, 'x')
         self.assertEqual(type(assignment.expression), NumberLiteral)
+
+    def test_begin(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN,TokenType.BEGIN,
+                                        TokenType.NUMBER,
+                                        TokenType.IDENTIFIER,
+                                        TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.CLOSE_PAREN,
+                                        TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        begin = syntax_tree.nodes[0]
+        self.assertIs(type(begin), Call)
+        lambda_of_begin = begin.callee
+        self.assertEqual(types(lambda_of_begin.body), [NumberLiteral, VariableReference, Call])
+        self.assertEqual(type(lambda_of_begin.formals), FormalParameters)
+        self.assertEqual(lambda_of_begin.formals.fixed_parameters, [])
 
 
 if __name__ == '__main__':

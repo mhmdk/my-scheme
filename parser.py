@@ -1,5 +1,6 @@
 from schemetoken import TokenType, keywords_map
 from schemeexpression import *
+from derivedexpression import *
 
 
 class SyntaxTree:
@@ -79,6 +80,10 @@ class Parser:
                 expr = self.scheme_lambda()
             elif self.current_token_has_type(TokenType.SET):
                 expr = self.assignment()
+            elif self.current_token_has_type(TokenType.COND):
+                expr = self.cond()
+            elif self.current_token_has_type(TokenType.BEGIN):
+                expr = self.begin()
             else:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
@@ -226,6 +231,17 @@ class Parser:
         name = self.consume(TokenType.IDENTIFIER).lexeme
         expression = self.expression()
         return Assignment(name, expression)
+
+    def cond(self):
+        self.consume(TokenType.COND)
+
+    def begin(self):
+        self.consume(TokenType.BEGIN)
+        sequence = []
+        while not self.is_end_of_list():
+            sequence.append(self.expression())
+        return make_begin(sequence)
+
 
     def raise_error(self, message, token=None):
         if token is not None:
