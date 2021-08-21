@@ -45,8 +45,10 @@ def build_procedure_definition(name, parameters, expression_tokens):
                Token(")", TokenType.CLOSE_PAREN, 0, 0)] + expression_tokens + [
                Token(")", TokenType.CLOSE_PAREN, 0, 0)]
 
+
 def types(objects):
     return [type(arg) for arg in objects]
+
 
 class ParserTest(unittest.TestCase):
 
@@ -247,7 +249,7 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(type(assignment.expression), NumberLiteral)
 
     def test_begin(self):
-        tokens = build_tokens_of_types([TokenType.OPEN_PAREN,TokenType.BEGIN,
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.BEGIN,
                                         TokenType.NUMBER,
                                         TokenType.IDENTIFIER,
                                         TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.CLOSE_PAREN,
@@ -259,6 +261,29 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(types(lambda_of_begin.body), [NumberLiteral, VariableReference, Call])
         self.assertEqual(type(lambda_of_begin.formals), FormalParameters)
         self.assertEqual(lambda_of_begin.formals.fixed_parameters, [])
+
+    def test_cond(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.COND,
+                                        TokenType.OPEN_PAREN,
+                                        TokenType.BOOLEAN, TokenType.IDENTIFIER,
+                                        TokenType.CLOSE_PAREN,
+                                        TokenType.OPEN_PAREN,
+                                        TokenType.BOOLEAN, TokenType.NUMBER,
+                                        TokenType.CLOSE_PAREN,
+                                        TokenType.OPEN_PAREN,
+                                        TokenType.ELSE, TokenType.NUMBER,
+                                        TokenType.CLOSE_PAREN,
+                                        TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        conditional = syntax_tree.nodes[0]
+        self.assertIs(type(conditional), Conditional)
+        self.assertIs(type(conditional.test), BoolLiteral)
+        # a begin which is transformed to lambda
+        self.assertIs(type(conditional.consequent), Call)
+
+        self.assertIs(type(conditional.alternate), Conditional)
+        else_clause = conditional.alternate.alternate
+        self.assertIs(type(else_clause), Call)
 
 
 if __name__ == '__main__':

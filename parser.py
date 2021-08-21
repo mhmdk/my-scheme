@@ -90,8 +90,11 @@ class Parser:
         elif self.current_token_has_type(TokenType.IDENTIFIER):
             expr = self.variable_reference()
         else:
-            current_token = self.current()
-            self.raise_error(f"unexpected token {current_token.lexeme}", current_token)
+            if self.isend():
+                self.raise_error("unexpected end of file")
+            else:
+                current_token = self.current()
+                self.raise_error(f"unexpected token {current_token.lexeme}", current_token)
         return expr
 
     def literal(self):
@@ -234,14 +237,36 @@ class Parser:
 
     def cond(self):
         self.consume(TokenType.COND)
+        clauses = []
+        while not self.is_end_of_list():
+            self.consume(TokenType.OPEN_PAREN)
+            clauses.append(self.cond_clause())
+            self.consume(TokenType.CLOSE_PAREN)
+        if len([clause in clauses for clause in clauses[:len(clauses) - 1] if clause.is_else]) > 0:
+            self.raise_error(f"else clause not last in cond", self.current())
+
+        return make_cond(clauses)
+
+    def cond_clause(self):
+        if self.current_token_has_type(TokenType.ELSE):
+            self.consume(TokenType.ELSE)
+            test = None
+        else:
+            test = self.expression()
+
+        sequence = []
+        while not self.is_end_of_list():
+            sequence.append(self.expression())
+        return CondClause(sequence, test)
 
     def begin(self):
         self.consume(TokenType.BEGIN)
         sequence = []
         while not self.is_end_of_list():
             sequence.append(self.expression())
+        if len(sequence) == 0:
+            self.raise_error("begin with empty sequence", self.current())
         return make_begin(sequence)
-
 
     def raise_error(self, message, token=None):
         if token is not None:
@@ -317,4 +342,3 @@ class Parser:
         if current_token is None or next_token is None:
             return False
         return current_token.type is current_token_type and next_token.type is next_token_type
-
