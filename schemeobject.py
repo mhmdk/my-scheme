@@ -114,6 +114,11 @@ class UserDefinedProcedure(SchemeProcedure):
         return f"scheme user defined procedure"
 
 
+class UnAssigned(SchemeObject):
+    def __eq__(self, other):
+        return isinstance(other, UnAssigned)
+
+
 class SchemeRuntimeError(Exception):
     def __init__(self, message=""):
         self.message = message

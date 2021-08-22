@@ -285,6 +285,58 @@ class ParserTest(unittest.TestCase):
         else_clause = conditional.alternate.alternate
         self.assertIs(type(else_clause), Call)
 
+    def test_let(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN,
+                                        TokenType.LET, TokenType.OPEN_PAREN,
+                                        TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.NUMBER,
+                                        TokenType.CLOSE_PAREN, TokenType.CLOSE_PAREN,
+                                        TokenType.IDENTIFIER, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        let = syntax_tree.nodes[0]
+        self.assertIs(type(let), Call)
+        self.assertIs(type(let.callee), Lambda)
+        self.assertEqual(len(let.callee.formals.fixed_parameters), 1)
+        self.assertEqual(len(let.args.args), 1)
+        self.assertIs(type(let.callee.body[0]), VariableReference)
+
+    def test_letstar(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN,
+                                        TokenType.LETSTAR, TokenType.OPEN_PAREN,
+                                        TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.NUMBER,
+                                        TokenType.CLOSE_PAREN,
+                                        TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.STRING,
+                                        TokenType.CLOSE_PAREN, TokenType.CLOSE_PAREN,
+                                        TokenType.IDENTIFIER, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        letstar = syntax_tree.nodes[0]
+        self.assertIs(type(letstar), Call)
+        self.assertIs(type(letstar.callee), Lambda)
+        self.assertEqual(len(letstar.callee.formals.fixed_parameters), 1)
+        self.assertEqual(len(letstar.args.args), 1)
+        self.assertIs(type(letstar.callee.body[0]), Call)
+        self.assertIs(type(letstar.callee.body[0].callee), Lambda)
+        self.assertIs(type(letstar.callee.body[0].callee.body[0]), VariableReference)
+
+    def test_letrec(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN,
+                                        TokenType.LETREC, TokenType.OPEN_PAREN,
+                                        TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.NUMBER,
+                                        TokenType.CLOSE_PAREN,
+                                        TokenType.OPEN_PAREN, TokenType.IDENTIFIER, TokenType.STRING,
+                                        TokenType.CLOSE_PAREN, TokenType.CLOSE_PAREN,
+                                        TokenType.IDENTIFIER, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        letrec = syntax_tree.nodes[0]
+        self.assertIs(type(letrec), Call)
+        outer_let = letrec
+        self.assertIs(type(outer_let.callee), Lambda)
+        self.assertEqual(len(outer_let.callee.formals.fixed_parameters), 2)
+        self.assertEqual(len(outer_let.args.args), 2)
+        inner_let = outer_let.callee.body[0]
+        self.assertIs(type(inner_let), Call)
+        self.assertIs(type(inner_let.callee.body[0]), Assignment)
+        self.assertIs(type(inner_let.callee.body[1]), Assignment)
+
 
 if __name__ == '__main__':
     unittest.main()

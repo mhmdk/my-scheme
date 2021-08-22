@@ -81,6 +81,8 @@ class Interpreter(SyntaxTreeVisitor):
         value = self.environment.get(variable_reference.variable_name)
         if value is None:
             self.raise_error(f"variable {variable_reference.variable_name} not found")
+        if value == UnAssigned():
+            self.raise_error(f"variable {variable_reference.variable_name} Unassigned")
         return value
 
     def visit_call(self, call):
@@ -132,6 +134,9 @@ class Interpreter(SyntaxTreeVisitor):
         else:
             raise SchemeRuntimeError(
                 f"procedure expects {procedure.arity} argument {'s' if procedure.arity > 1 else ''}, {len(args)} given")
+
+    def visit_unassigned(self, unassigned):
+        return UnAssigned()
 
     def raise_error(self, message):
         raise SchemeRuntimeError(message)

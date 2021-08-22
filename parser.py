@@ -48,6 +48,9 @@ class SyntaxTreeVisitor:
     def visit_assignment(self, assignment):
         pass
 
+    def visit_unassigned(self, unassigned):
+        pass
+
 
 class Parser:
     def __init__(self, tokens):
@@ -84,6 +87,12 @@ class Parser:
                 expr = self.cond()
             elif self.current_token_has_type(TokenType.BEGIN):
                 expr = self.begin()
+            elif self.current_token_has_type(TokenType.LET):
+                expr = self.let()
+            elif self.current_token_has_type(TokenType.LETSTAR):
+                expr = self.letstar()
+            elif self.current_token_has_type(TokenType.LETREC):
+                expr = self.letrec()
             else:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
@@ -200,7 +209,7 @@ class Parser:
         while not self.is_end_of_list():
             expressions.append(self.expression())
         if len(expressions) == 0:
-            self.raise_error(f"lambda has empty body", self.previous())
+            self.raise_error(f"expected non empty sequence, got empty body", self.previous())
         return expressions
 
     def definition(self):
@@ -261,12 +270,41 @@ class Parser:
 
     def begin(self):
         self.consume(TokenType.BEGIN)
-        sequence = []
-        while not self.is_end_of_list():
-            sequence.append(self.expression())
-        if len(sequence) == 0:
-            self.raise_error("begin with empty sequence", self.current())
+        sequence = self.lambda_body()
         return make_begin(sequence)
+
+    def let(self):
+        self.consume(TokenType.LET)
+        bindings = self.let_bindings()
+        body = self.lambda_body()
+        return make_let(bindings, body)
+
+    def letstar(self):
+        self.consume(TokenType.LETSTAR)
+        bindings = self.let_bindings()
+        body = self.lambda_body()
+        return make_letstar(bindings, body)
+
+    def letrec(self):
+        self.consume(TokenType.LETREC)
+        bindings = self.let_bindings()
+        body = self.lambda_body()
+        return make_letrec(bindings, body)
+
+    def let_bindings(self):
+        self.consume(TokenType.OPEN_PAREN)
+        bindings = []
+        while not self.is_end_of_list():
+            bindings.append(self.let_binding())
+        self.consume(TokenType.CLOSE_PAREN)
+        return bindings
+
+    def let_binding(self):
+        self.consume(TokenType.OPEN_PAREN)
+        variable = self.consume(TokenType.IDENTIFIER).lexeme
+        init = self.expression()
+        self.consume(TokenType.CLOSE_PAREN)
+        return LetBinding(variable, init)
 
     def raise_error(self, message, token=None):
         if token is not None:

@@ -126,3 +126,9 @@ class Assignment(Expression):
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_assignment(self)
+
+
+# user has no way to create this in source code, it is created by the parser to implement letrec
+class UnAssigned(Expression):
+    def accept(self, syntax_tree_visitor):
+        return syntax_tree_visitor.visit_unassigned(self)
