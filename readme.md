@@ -51,9 +51,6 @@ for a list of derived expressions: https://schemers.org/Documents/Standards/R5RS
 
 to consider adding:
 dot notation for pairs, including pairs in quoted expressions and formal parameters.  
- 
-
-
 
 see also:  
 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.3  
@@ -85,9 +82,9 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
       - abs
 * To Do:
     * Equivalence Predicates:
-      - eqv?
-      - eq?
-      - equal?
+        - eqv?
+        - eq?
+        - equal?
     * Booleans:
         - not
         - boolean?
