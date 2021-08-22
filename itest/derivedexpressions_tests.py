@@ -34,3 +34,22 @@ class DerivedExpressionsTest(ExpressionTest):
         (even? 88))'''
         expected = "#t"
         self.assertEqual(expected, self.evaluate(expression))
+
+    def test_internal_definition(self):
+        expression = '''( define (f x)
+        (define even? (lambda (n) (if (zero? n) #t (odd? (- n 1)))))
+        (define odd? (lambda (n) (if (zero? n) #f (even? (- n 1)))))
+        (even? x))
+        (f 88)'''
+        expected = "#t"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_interdependent_internal_definition(self):
+        expression = '''(let ((a 1))
+        (define (f x)
+        (define b (+ a x))
+        (define a 5)
+        (+ a b))
+        (f 10))'''
+        expected = "variable a Unassigned"
+        self.assertIn(expected, self.evaluate(expression))

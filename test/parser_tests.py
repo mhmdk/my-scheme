@@ -238,6 +238,22 @@ class ParserTest(unittest.TestCase):
         self.assertEqual(type(definition.expression.body[0]), NumberLiteral)
         self.assertEqual(definition.expression.formals.fixed_parameters, ['a', 'b'])
 
+    def test_internal_definition(self):
+        internal_definition = build_variable_definition('c', [Token('1', TokenType.NUMBER, 0, 0)])
+        tokens = build_procedure_definition('x', ['a', 'b'], internal_definition + [Token('1', TokenType.NUMBER, 0, 0)])
+        syntax_tree = Parser(tokens).parse()
+        definition = syntax_tree.nodes[0]
+        self.assertIs(type(definition), Definition)
+        self.assertEqual(definition.name, 'x')
+        self.assertEqual(type(definition.expression), Lambda)
+        self.assertEqual(definition.expression.formals.fixed_parameters, ['a', 'b'])
+        outer_let = definition.expression.body[0]
+        self.assertEqual(type(outer_let), Call)
+        inner_let = outer_let.callee.body[0]
+        self.assertEqual(type(inner_let), Call)
+        self.assertEqual(type(inner_let.callee.body[0]), Assignment)
+        self.assertEqual(type(inner_let.callee.body[1]), NumberLiteral)
+
     def test_assignment(self):
         tokens = [Token('(', TokenType.OPEN_PAREN, 0, 0), Token('set!', TokenType.SET, 0, 0),
                   Token('x', TokenType.IDENTIFIER, 0, 0), Token('1', TokenType.NUMBER, 0, 0),

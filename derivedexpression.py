@@ -62,3 +62,8 @@ def make_letrec(bindings, body):
     outer_let_bindings = [LetBinding(binding.variable, UnAssigned()) for binding in bindings]
     outer_let_body = [make_let(internal_let_bindings, internal_let_body)]
     return make_let(outer_let_bindings, outer_let_body)
+
+
+def make_lambda_body_with_internal_definitions(definitions, body):
+    bindings = [LetBinding(definition.name, definition.expression) for definition in definitions]
+    return [make_letrec(bindings, body)]

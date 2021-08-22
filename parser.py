@@ -205,12 +205,18 @@ class Parser:
         self.consume(TokenType.CLOSE_PAREN)
 
     def lambda_body(self):
+        internal_definitions = []
+        while self.is_definition():
+            internal_definitions.append(self.definition())
         expressions = []
         while not self.is_end_of_list():
             expressions.append(self.expression())
-        if len(expressions) == 0:
+        if len(expressions) == 0 and len(internal_definitions) == 0:
             self.raise_error(f"expected non empty sequence, got empty body", self.previous())
-        return expressions
+        if len(internal_definitions) > 0:
+            return make_lambda_body_with_internal_definitions(internal_definitions, expressions)
+        else:
+            return expressions
 
     def definition(self):
         self.consume(TokenType.OPEN_PAREN)

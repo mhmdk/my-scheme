@@ -4,7 +4,7 @@ reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-1
 
 token -> keyword | identifier | number | string | boolean | character | ( | ) | .  
 comment -> ; all characters until line break  
-keyword -> else | define | quote | lambda | if | set! | begin | cond | and | or | case | let  
+keyword -> else | define | quote | lambda | if | set! | begin | cond | and | or | case | let | let* | letrec | delay
 identifier -> initial subsequent* | peculiaridentifier  
 initial -> alpha | ! | $ | % | & | * | / | : | < | = | > | ? | ^ | _ | ~  
 subsequent -> initial | digit | + | - | .  
