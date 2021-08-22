@@ -67,3 +67,21 @@ def make_letrec(bindings, body):
 def make_lambda_body_with_internal_definitions(definitions, body):
     bindings = [LetBinding(definition.name, definition.expression) for definition in definitions]
     return [make_letrec(bindings, body)]
+
+
+def make_and(tests):
+    if len(tests) == 0:
+        return BoolLiteral("#t")
+    test_result_variable_name = str(len(tests))
+    test_result_variable_reference = VariableReference(test_result_variable_name)
+    let_body = [Conditional(test_result_variable_reference, make_and(tests[1:]), test_result_variable_reference)]
+    return make_let([LetBinding(test_result_variable_name, tests[0])], let_body)
+
+
+def make_or(tests):
+    if len(tests) == 0:
+        return BoolLiteral("#f")
+    test_result_variable_name = str(len(tests))
+    test_result_variable_reference = VariableReference(test_result_variable_name)
+    let_body = [Conditional(test_result_variable_reference, test_result_variable_reference, make_or(tests[1:]))]
+    return make_let([LetBinding(test_result_variable_name, tests[0])], let_body)

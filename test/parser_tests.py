@@ -353,6 +353,24 @@ class ParserTest(unittest.TestCase):
         self.assertIs(type(inner_let.callee.body[0]), Assignment)
         self.assertIs(type(inner_let.callee.body[1]), Assignment)
 
+    def test_and(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.AND, TokenType.NUMBER,
+                                        TokenType.IDENTIFIER, TokenType.STRING, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        and_expression = syntax_tree.nodes[0]
+        self.assertIs(type(and_expression), Call)
+        self.assertIs(len(and_expression.args.args), 1)
+        self.assertIs(type(and_expression.callee.body[0]), Conditional)
+
+    def test_or(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.OR, TokenType.NUMBER,
+                                        TokenType.IDENTIFIER, TokenType.STRING, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        or_expression = syntax_tree.nodes[0]
+        self.assertIs(type(or_expression), Call)
+        self.assertIs(len(or_expression.args.args), 1)
+        self.assertIs(type(or_expression.callee.body[0]), Conditional)
+
 
 if __name__ == '__main__':
     unittest.main()

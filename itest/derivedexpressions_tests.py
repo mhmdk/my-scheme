@@ -53,3 +53,13 @@ class DerivedExpressionsTest(ExpressionTest):
         (f 10))'''
         expected = "variable a Unassigned"
         self.assertIn(expected, self.evaluate(expression))
+
+    def test_and(self):
+        expression = "(and #t (+ 1 2) (zero? 0) )"
+        expected = "#t"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_or(self):
+        expression = "(or #f (+ 1 2) (undefined_function 1 2) )"
+        expected = "3"
+        self.assertEqual(expected, self.evaluate(expression))

@@ -93,6 +93,10 @@ class Parser:
                 expr = self.letstar()
             elif self.current_token_has_type(TokenType.LETREC):
                 expr = self.letrec()
+            elif self.current_token_has_type(TokenType.AND):
+                expr = self.and_expression()
+            elif self.current_token_has_type(TokenType.OR):
+                expr = self.or_expression()
             else:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
@@ -204,13 +208,17 @@ class Parser:
             formal_parameters.append_parameter(parameter.lexeme)
         self.consume(TokenType.CLOSE_PAREN)
 
+    def sequence(self):
+        expressions = []
+        while not self.is_end_of_list():
+            expressions.append(self.expression())
+        return expressions
+
     def lambda_body(self):
         internal_definitions = []
         while self.is_definition():
             internal_definitions.append(self.definition())
-        expressions = []
-        while not self.is_end_of_list():
-            expressions.append(self.expression())
+        expressions = self.sequence()
         if len(expressions) == 0 and len(internal_definitions) == 0:
             self.raise_error(f"expected non empty sequence, got empty body", self.previous())
         if len(internal_definitions) > 0:
@@ -269,10 +277,8 @@ class Parser:
         else:
             test = self.expression()
 
-        sequence = []
-        while not self.is_end_of_list():
-            sequence.append(self.expression())
-        return CondClause(sequence, test)
+        expressions = self.sequence()
+        return CondClause(expressions, test)
 
     def begin(self):
         self.consume(TokenType.BEGIN)
@@ -311,6 +317,16 @@ class Parser:
         init = self.expression()
         self.consume(TokenType.CLOSE_PAREN)
         return LetBinding(variable, init)
+
+    def and_expression(self):
+        self.consume(TokenType.AND)
+        expressions = self.sequence()
+        return make_and(expressions)
+
+    def or_expression(self):
+        self.consume(TokenType.OR)
+        expressions = self.sequence()
+        return make_or(expressions)
 
     def raise_error(self, message, token=None):
         if token is not None:

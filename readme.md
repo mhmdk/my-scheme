@@ -46,12 +46,13 @@ consequent -> expression
 alternate -> expression  
 assignment -> (set! identifier expression)
 
+in addition to derived expressions: cond, and, or, let, let*, letrec, begin, delay
+for a list of derived expressions: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4
 
-to consider adding:  
-derived expressions :cond, and, or, let, let*, letrec, begin, delay
+to consider adding:
 dot notation for pairs, including pairs in quoted expressions and formal parameters.  
-for a list of primitive and derived expressions : 
-https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4
+ 
+
 
 
 see also:  
