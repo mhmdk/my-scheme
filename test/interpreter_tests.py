@@ -3,7 +3,7 @@ from interpreter import Interpreter, SchemeRuntimeError, Environment, SchemeNumb
 from schemeexpression import *
 import unittest
 
-from schemeobject import BuiltInProcedure, SchemeList, UserDefinedProcedure
+from schemeobject import BuiltInProcedure, SchemePair, UserDefinedProcedure, make_scheme_list
 
 
 def interpreter_with_variables(**kwargs):
@@ -88,7 +88,7 @@ class InterpreterTests(unittest.TestCase):
 
     def test_builtin_variadic_procedure_call(self):
         built_in_procedure = BuiltInProcedure(plus, variadic=True)
-        result = built_in_procedure.call([SchemeList([SchemeNumber(2), SchemeNumber(5)])])
+        result = built_in_procedure.call([make_scheme_list([SchemeNumber(2), SchemeNumber(5)])])
         self.assertEqual(result, SchemeNumber(7))
 
     def test_user_defined_variadic_procedure_call(self):
@@ -112,7 +112,7 @@ class InterpreterTests(unittest.TestCase):
         arguments.add(NumberLiteral('2'))
         call = Call(scheme_lambda, arguments)
         result = self.interpreter.visit_call(call)
-        self.assertEqual(type(result), SchemeList)
+        self.assertEqual(type(result), SchemePair)
         self.assertEqual(result.car(), SchemeNumber(1))
 
     def test_variadic_lambda(self):

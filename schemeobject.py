@@ -34,6 +34,9 @@ class SchemeBool(SchemeObject):
     def __str__(self):
         return "#t" if self.value else "#f"
 
+    def __bool__(self):
+        return self.value
+
 
 class SchemeString(SchemeObject):
     def __init__(self, value):
@@ -57,24 +60,98 @@ class SchemeSymbol(SchemeObject):
         return self.value
 
 
-class SchemeList(SchemeObject):
-    def __init__(self, iterable=None):
-        self._elements = []
-        if iterable is not None:
-            self._elements.extend(iterable)
+class SchemeEmptyList:
+    instance = None
 
-    def __str__(self):
-        return f"( {' '.join(str(element) for element in self._elements)} )"
+    def __new__(cls):
+        if cls.instance is None:
+            cls.instance = super().__new__(cls)
+        return cls.instance
 
     def __iter__(self):
-        return iter(self._elements)
+        return iter([])
+
+    def __str__(self):
+        return "()"
 
     def size(self):
-        return len(self._elements)
+        return 0
+
+    def is_list(self):
+        return True
+
+
+class SchemePair(SchemeObject):
+    def __init__(self, first, second):
+        self.first = first
+        self.second = second
+
+    def __str__(self):
+        if self.is_list():
+            return f"( {' '.join(str(element) for element in self)} )"
+        else:
+            return f"( {self.first} . {self.second} )"
+
+    def __iter__(self):
+        if not self.is_list():
+            raise Exception("trying to iterate a non list pair")
+        return SchemeListIterator(self)
+
+    def size(self):
+        if not self.is_list():
+            raise Exception("trying to iterate a non list pair")
+        return scheme_list_length(self)
 
     def car(self):
-        return self._elements[0]
+        return self.first
 
+    def cdr(self):
+        return self.second
+
+    def set_car(self, value):
+        self.first = value
+
+    def set_cdr(self, value):
+        self.second = value
+
+    def is_list(self):
+        return isinstance(self.cdr(), SchemePair) and self.cdr().is_list() or self.cdr() == SchemeEmptyList()
+
+
+class SchemeListIterator:
+    def __init__(self, pair):
+        self.current = pair
+
+    def __next__(self):
+        if self.current is SchemeEmptyList():
+            raise StopIteration
+        element = self.current.first
+        self.current = self.current.cdr()
+        return element
+
+
+def is_scheme_list(scheme_object):
+    return scheme_object is SchemeEmptyList() or isinstance(scheme_object, SchemePair) and scheme_object.is_list()
+
+
+def make_scheme_list(elements):
+    if len(elements) == 0:
+        return SchemeEmptyList()
+    return SchemePair(elements[0], make_scheme_list(elements[1:]))
+
+
+def scheme_list_length(scheme_list):
+    if scheme_list is SchemeEmptyList():
+        return 0
+    return 1 + scheme_list_length(scheme_list.cdr())
+
+
+def scheme_list_tail(scheme_list):
+    if scheme_list is SchemeEmptyList():
+        return scheme_list
+    while scheme_list.cdr() is not SchemeEmptyList():
+        scheme_list = scheme_list.cdr()
+    return scheme_list
 
 class SchemeProcedure(SchemeObject):
     def __init__(self, **kwargs):

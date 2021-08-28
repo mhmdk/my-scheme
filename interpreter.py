@@ -65,7 +65,7 @@ class Interpreter(SyntaxTreeVisitor):
         return SchemeString(literal)
 
     def visit_list(self, quoted_list):
-        return SchemeList(self.interpret_expression(element) for element in quoted_list.elements)
+        return make_scheme_list([self.interpret_expression(element) for element in quoted_list.elements])
 
     def visit_symbol(self, symbol):
         return SchemeSymbol(symbol.symbol)
@@ -75,7 +75,7 @@ class Interpreter(SyntaxTreeVisitor):
         if self.truth(conditional_value):
             return self.interpret_expression(conditional.consequent)
         return self.interpret_expression(
-            conditional.alternate) if conditional.alternate is not None else SchemeList()
+            conditional.alternate) if conditional.alternate is not None else SchemeEmptyList()
 
     def visit_variable_reference(self, variable_reference):
         value = self.environment.get(variable_reference.variable_name)
@@ -128,7 +128,7 @@ class Interpreter(SyntaxTreeVisitor):
     @staticmethod
     def prepare_args(procedure, args):
         if procedure.is_variadic:
-            return [SchemeList(args)]
+            return [make_scheme_list(args)]
         elif len(args) == procedure.arity:
             return args
         else:

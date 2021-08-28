@@ -94,9 +94,23 @@ def init_global_environment(environment):
     environment.add('*', BuiltInProcedure(multiply, variadic=True))
     environment.add('/', BuiltInProcedure(divide, variadic=True))
     environment.add('abs', BuiltInProcedure(absolute_value, arity=1))
+
     # booleans
     environment.add('not', BuiltInProcedure(scheme_not, arity=1))
     environment.add('boolean?', BuiltInProcedure(is_boolean, arity=1))
+
+    # pairs and lists
+    environment.add('pair?', BuiltInProcedure(is_pair, arity=1))
+    environment.add('cons', BuiltInProcedure(cons, arity=2))
+    environment.add('car', BuiltInProcedure(car, arity=1))
+    environment.add('cdr', BuiltInProcedure(cdr, arity=1))
+    environment.add('set-car!', BuiltInProcedure(set_car, arity=2))
+    environment.add('set-cdr!', BuiltInProcedure(set_cdr, arity=2))
+    environment.add('null?', BuiltInProcedure(is_empty_list, arity=1))
+    environment.add('list?', BuiltInProcedure(is_list, arity=1))
+    environment.add('list', BuiltInProcedure(make_list, variadic=True))
+    environment.add('length', BuiltInProcedure(list_length, arity=1))
+    environment.add('append', BuiltInProcedure(append_list, variadic=True))
 
 
 
