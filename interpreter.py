@@ -72,10 +72,10 @@ class Interpreter(SyntaxTreeVisitor):
 
     def visit_conditional(self, conditional):
         conditional_value = self.interpret_expression(conditional.test)
-        if isinstance(conditional_value, SchemeBool) and not conditional_value.value:
-            return self.interpret_expression(
-                conditional.alternate) if conditional.alternate is not None else SchemeList()
-        return self.interpret_expression(conditional.consequent)
+        if self.truth(conditional_value):
+            return self.interpret_expression(conditional.consequent)
+        return self.interpret_expression(
+            conditional.alternate) if conditional.alternate is not None else SchemeList()
 
     def visit_variable_reference(self, variable_reference):
         value = self.environment.get(variable_reference.variable_name)
@@ -137,6 +137,10 @@ class Interpreter(SyntaxTreeVisitor):
 
     def visit_unassigned(self, unassigned):
         return UnAssigned()
+
+    @staticmethod
+    def truth(scheme_object):
+        return not (isinstance(scheme_object, SchemeBool) and not scheme_object.value)
 
     def raise_error(self, message):
         raise SchemeRuntimeError(message)

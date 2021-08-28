@@ -2,6 +2,7 @@ import functools
 import itertools
 import operator
 
+from interpreter import Interpreter
 from schemeobject import *
 
 
@@ -41,6 +42,8 @@ def takes_scheme_numbers(function_name="", minimum_number_of_args=0):
 
     return decorated_wrapper
 
+
+# numerical operations
 
 @return_scheme_boolean
 def is_number(scheme_object):
@@ -118,16 +121,12 @@ def is_negative(scheme_object):
 @return_scheme_boolean
 @takes_scheme_number
 def is_odd(scheme_object):
-    if not is_integer(scheme_object):
-        raise SchemeRuntimeError(f"procedure odd? requires an integer")
     return scheme_object.value % 2 == 1
 
 
 @return_scheme_boolean
 @takes_scheme_number
 def is_even(scheme_object):
-    if not is_integer(scheme_object):
-        raise SchemeRuntimeError(f"procedure even? requires an integer")
     return scheme_object.value % 2 == 0
 
 
@@ -185,3 +184,14 @@ def check_all_are_numbers(list_of_arguments):
 def check_argument_is_number(scheme_object):
     if not is_number(scheme_object):
         raise SchemeRuntimeError(f"argument {scheme_object} is of incorrect type ")
+
+
+# booleans
+@return_scheme_boolean
+def scheme_not(scheme_object):
+    return not Interpreter.truth(scheme_object)
+
+
+@return_scheme_boolean
+def is_boolean(scheme_object):
+    return isinstance(scheme_object, SchemeBool)

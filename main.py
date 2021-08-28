@@ -74,6 +74,7 @@ class ScanException(Exception):
 
 
 def init_global_environment(environment):
+    # numerical operations
     environment.add('number?', BuiltInProcedure(is_number, arity=1))
     environment.add('integer?', BuiltInProcedure(is_integer, arity=1))
     environment.add('<', BuiltInProcedure(numbers_less, variadic=True))
@@ -93,6 +94,9 @@ def init_global_environment(environment):
     environment.add('*', BuiltInProcedure(multiply, variadic=True))
     environment.add('/', BuiltInProcedure(divide, variadic=True))
     environment.add('abs', BuiltInProcedure(absolute_value, arity=1))
+    # booleans
+    environment.add('not', BuiltInProcedure(scheme_not, arity=1))
+    environment.add('boolean?', BuiltInProcedure(is_boolean, arity=1))
 
 
 

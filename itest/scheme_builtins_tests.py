@@ -62,3 +62,18 @@ class SchemeBuiltinsTest(ExpressionTest):
     def test_abs(self):
         self.assertEqual("1001.6", self.evaluate("(abs -1001.6 )"))
         self.assertEqual("8", self.evaluate("(abs 8)"))
+
+#booleans
+
+    def test_not(self):
+        self.assertEqual("#f", self.evaluate("(not 0)"))
+        self.assertEqual("#f", self.evaluate("(not 1)"))
+        self.assertEqual("#t", self.evaluate("(not #f)"))
+        self.assertEqual("#f", self.evaluate("(not #t)"))
+        self.assertEqual("#f", self.evaluate("(not (quote ()))"))
+        self.assertEqual("#f", self.evaluate("(not (quote (1 2)))"))
+
+    def test_is_boolean(self):
+        self.assertEqual("#t", self.evaluate("(boolean? #f)"))
+        self.assertEqual("#f", self.evaluate("(boolean? (quote (1)) )"))
+        self.assertEqual("#f", self.evaluate("(boolean? 2)"))
