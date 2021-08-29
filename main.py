@@ -74,7 +74,6 @@ class ScanException(Exception):
 
 
 def init_global_environment(environment):
-
     # equivalence predicates
     environment.add('eqv?', BuiltInProcedure(scheme_is, arity=2))
     environment.add('eq?', BuiltInProcedure(scheme_is, arity=2))
@@ -118,6 +117,13 @@ def init_global_environment(environment):
     environment.add('length', BuiltInProcedure(list_length, arity=1))
     environment.add('append', BuiltInProcedure(append_list, variadic=True))
 
+    # control features
+    environment.add('procedure?', BuiltInProcedure(is_procedure, arity=1))
+    environment.add('apply', BuiltInProcedure(apply, variadic=True))
+    environment.add('for-each', BuiltInProcedure(scheme_for_each, variadic=True))
+    environment.add('map', BuiltInProcedure(scheme_map, variadic=True))
+    environment.add('force', BuiltInProcedure(force, arity=1))
+    environment.add('make-promise', BuiltInProcedure(make_promise, arity=1))
 
 
 if __name__ == '__main__':

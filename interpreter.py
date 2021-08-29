@@ -33,7 +33,6 @@ class Interpreter(SyntaxTreeVisitor):
         try:
             for expression in syntax_tree.nodes:
                 result = self.interpret_expression(expression)
-            # return the result of last expression
             return result
         except SchemeRuntimeError as error:
             return SchemeString(error.message)
@@ -90,6 +89,9 @@ class Interpreter(SyntaxTreeVisitor):
         if not isinstance(procedure, SchemeProcedure):
             self.raise_error(f"{procedure} is not a procedure")
         arguments_values = [self.interpret_expression(arg) for arg in call.args.args]
+        return self.do_apply(procedure, arguments_values)
+
+    def do_apply(self, procedure, arguments_values):
         args = self.prepare_args(procedure, arguments_values)
         if isinstance(procedure, BuiltInProcedure):
             return procedure.call(args)
@@ -119,7 +121,8 @@ class Interpreter(SyntaxTreeVisitor):
         self.environment = old_environment
         return value
 
-    def prepare_call_environment(self, args, procedure):
+    @staticmethod
+    def prepare_call_environment(args, procedure):
         call_environment = Environment(procedure.environment)
         for parameter, argument in zip(procedure.parameters, args):
             call_environment.add(parameter, argument)

@@ -168,3 +168,51 @@ class SchemeBuiltinsTest(ExpressionTest):
         self.assertEqual("( 1 2 3 4 5 )", self.evaluate("(append (list 1 2 3) (list 4 5) )"))
         self.assertEqual("( 1 . ( 2 . ( 3 . ( 4 . ( 5 . ( 6 . 7 ) ) ) ) ) )",
                          self.evaluate("(append (list 1 2 3) (list 4 5) (cons 6 7) )"))
+
+    # control features
+    def test_is_procedure(self):
+        self.assertEqual("#f", self.evaluate("(procedure? #t)"))
+        self.assertEqual("#t", self.evaluate("(procedure? (lambda () 1) )"))
+
+    def test_apply(self):
+        self.assertEqual("3", self.evaluate("(apply + (list 1 2))"))
+        self.assertEqual("3", self.evaluate("(apply + 0 0 0 (list 1 2))"))
+        self.assertEqual("4", self.evaluate("(define (square x) (* x x)) (apply square (quote (2)))"))
+        self.assertIn("incorrect type", self.evaluate("(define (square x) (* x x)) (apply square 2)"))
+        self.assertEqual("( 200 )", self.evaluate('''
+            (define compose
+                (lambda (f g)
+                    (lambda args
+                        (f (apply g args)))))
+
+            ((compose list *) 10 20)'''))
+
+    def test_for_each(self):
+        self.assertEqual("( ( 0 . 1 ) ( 0 . 1 ) ( 0 . 1 ) ( 0 . 1 ) ( 0 . 1 ) )", self.evaluate('''
+                (define l (list (cons 2 2) (cons 2 2) (cons 2 2) (cons 2 2) (cons 2 2)))
+                (for-each 
+                    (lambda (pair-to-modify ) 
+                        (set-car! pair-to-modify 0) 
+                        (set-cdr! pair-to-modify 1)) 
+                    l )
+                l'''))
+        self.assertEqual("2", self.evaluate('''
+            (let ((count 0))
+                (for-each 
+                    (lambda (ignored) (set! count (+ count 1)))
+                    (quote (a b)) )
+                count)'''))
+
+    def test_map(self):
+        self.assertEqual("( 1 4 9 16 25 )", self.evaluate('''
+                (map (lambda (n) (* n n))
+                    (quote (1 2 3 4 5)) ) '''))
+        self.assertEqual("( 5 7 9 )", self.evaluate('''
+                (map +
+                    (quote ( 1 2 3 )) (quote ( 4 5 6 ))) '''))
+
+    def test_force(self):
+        pass
+
+    def test_make_promise(self):
+        pass

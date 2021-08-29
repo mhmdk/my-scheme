@@ -44,11 +44,10 @@ def takes_scheme_list(function):
     return make_check_and_call_function(function, is_list)
 
 
-def takes_scheme_list_of_numbers(function_name="", minimum_number_of_args=0):
+def minimum_required_args(function_name, minimum_number_of_args):
     def decorated_wrapper(function):
         def wrapper(*args, **kwargs):
             scheme_list = args[0]
-            check_all_are_numbers(scheme_list)
             if scheme_list.size() < minimum_number_of_args:
                 raise SchemeRuntimeError(
                     f"procedure {function_name} requires at least {minimum_number_of_args} argument{'' if minimum_number_of_args == 1 else 's'} ")
@@ -59,10 +58,14 @@ def takes_scheme_list_of_numbers(function_name="", minimum_number_of_args=0):
     return decorated_wrapper
 
 
-def check_all_are_numbers(scheme_list_of_arguments):
-    for scheme_object in scheme_list_of_arguments:
-        if not is_number(scheme_object):
-            raise SchemeRuntimeError(f"argument {scheme_object} is of incorrect type ")
+def takes_scheme_list_of_numbers(function):
+    def wrapper(*args, **kwargs):
+        scheme_list = args[0]
+        for scheme_object in scheme_list:
+            check_argument_type(scheme_object, is_number)
+        return function(*args, **kwargs)
+
+    return wrapper
 
 
 # equivalence predicates
@@ -93,7 +96,7 @@ def is_integer(scheme_object):
 
 
 @return_scheme_boolean
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def numbers_equal(list_of_numbers):
     values = [number.value for number in list_of_numbers]
     if len(values) == 0:
@@ -102,7 +105,7 @@ def numbers_equal(list_of_numbers):
 
 
 @return_scheme_boolean
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def numbers_less(list_of_numbers):
     values = [number.value for number in list_of_numbers]
     if len(values) == 0:
@@ -111,7 +114,7 @@ def numbers_less(list_of_numbers):
 
 
 @return_scheme_boolean
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def numbers_greater(list_of_numbers):
     values = [number.value for number in list_of_numbers]
     if len(values) == 0:
@@ -120,7 +123,7 @@ def numbers_greater(list_of_numbers):
 
 
 @return_scheme_boolean
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def numbers_less_or_equal(list_of_numbers):
     values = [number.value for number in list_of_numbers]
     if len(values) == 0:
@@ -129,7 +132,7 @@ def numbers_less_or_equal(list_of_numbers):
 
 
 @return_scheme_boolean
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def numbers_greater_or_equal(list_of_numbers):
     values = [number.value for number in list_of_numbers]
     if len(values) == 0:
@@ -168,25 +171,28 @@ def is_even(scheme_object):
 
 
 @return_scheme_number
-@takes_scheme_list_of_numbers('max', 1)
+@takes_scheme_list_of_numbers
+@minimum_required_args('max', 1)
 def numbers_max(list_of_numbers):
     return max([number.value for number in list_of_numbers])
 
 
 @return_scheme_number
-@takes_scheme_list_of_numbers('min', 1)
+@takes_scheme_list_of_numbers
+@minimum_required_args('min', 1)
 def numbers_min(list_of_numbers):
     return min([number.value for number in list_of_numbers])
 
 
 @return_scheme_number
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def plus(list_of_numbers):
     return sum(scheme_number.value for scheme_number in list_of_numbers)
 
 
 @return_scheme_number
-@takes_scheme_list_of_numbers('-', 1)
+@takes_scheme_list_of_numbers
+@minimum_required_args('-', 1)
 def minus(list_of_numbers):
     if list_of_numbers.size() == 1:
         return - list_of_numbers.car().value
@@ -194,13 +200,14 @@ def minus(list_of_numbers):
 
 
 @return_scheme_number
-@takes_scheme_list_of_numbers()
+@takes_scheme_list_of_numbers
 def multiply(list_of_numbers):
     return functools.reduce(operator.mul, [number.value for number in list_of_numbers], 1)
 
 
 @return_scheme_number
-@takes_scheme_list_of_numbers('/', 1)
+@takes_scheme_list_of_numbers
+@minimum_required_args('/', 1)
 def divide(list_of_numbers):
     if list_of_numbers.size() == 1:
         return 1 / list_of_numbers.car().value
@@ -276,6 +283,7 @@ def list_length(scheme_list):
 
 
 @takes_scheme_list
+@minimum_required_args('append', 1)
 def append_list(scheme_objects):
     check_append_args(scheme_objects)
     while scheme_objects.cdr() is not SchemeEmptyList() and scheme_objects.car() is SchemeEmptyList():
@@ -290,9 +298,69 @@ def append_list(scheme_objects):
 
 
 def check_append_args(args):
-    if args.size() == 0:
-        raise SchemeRuntimeError(f"procedure append requires at least 1 argument")
-
     while args.cdr() is not SchemeEmptyList():
         check_argument_type(args.car(), is_list)
         args = args.cdr()
+
+
+# control features
+@return_scheme_boolean
+def is_procedure(scheme_object):
+    return isinstance(scheme_object, SchemeProcedure)
+
+
+def check_map_args(args):
+    check_argument_type(args[0], is_procedure)
+    for arg in args[1:len(args)]:
+        check_argument_type(arg, is_list)
+
+
+def check_apply_args(args):
+    check_argument_type(args[0], is_procedure)
+    check_argument_type(args[len(args) - 1], is_list)
+
+
+def apply_impl(procedure, args):
+    # TODO add tests in combination with closures
+    return Interpreter().do_apply(procedure, args)
+
+
+@minimum_required_args('apply', 2)
+def apply(scheme_objects):
+    args = list(scheme_objects)
+    check_apply_args(args)
+    number_of_args = len(args)
+    procedure = args[0]
+    final_argument = args[number_of_args - 1]
+    args_to_pass = args[1:number_of_args - 1]
+    args_to_pass.extend(final_argument)
+    return apply_impl(procedure, args_to_pass)
+
+
+@minimum_required_args('for-each', 2)
+def scheme_for_each(scheme_objects):
+    scheme_map(scheme_objects)
+    return SchemeSymbol('ok')
+
+
+@minimum_required_args('map', 2)
+def scheme_map(scheme_objects):
+    args = list(scheme_objects)
+    check_map_args(args)
+    number_of_args = len(args)
+    procedure = args[0]
+    lists = [list(arg) for arg in args[1:number_of_args]]
+    results = []
+    for tuple_of_args_to_pass in zip(*lists):
+        args_to_pass = list(tuple_of_args_to_pass)
+        result = apply_impl(procedure, args_to_pass)
+        results.append(result)
+    return make_scheme_list(results)
+
+
+def force(promise):
+    pass
+
+
+def make_promise(proc):
+    pass

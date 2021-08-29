@@ -99,14 +99,15 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
     - list
     - length
     - append
+  * Control Features
+    - procedure?
+    - apply
+    - map
+    - for-each
 * To Do:
     * Control Features
-        - procedure?
-        - apply
-        - map
-        - for-each
-        - force
-        - make-promise
+      - force
+      - make-promise
             
     
 for a complete list of possible procedures: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_chap_6
