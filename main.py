@@ -74,6 +74,12 @@ class ScanException(Exception):
 
 
 def init_global_environment(environment):
+
+    # equivalence predicates
+    environment.add('eqv?', BuiltInProcedure(scheme_is, arity=2))
+    environment.add('eq?', BuiltInProcedure(scheme_is, arity=2))
+    environment.add('equal?', BuiltInProcedure(scheme_equal, arity=2))
+
     # numerical operations
     environment.add('number?', BuiltInProcedure(is_number, arity=1))
     environment.add('integer?', BuiltInProcedure(is_integer, arity=1))

@@ -65,6 +65,21 @@ def check_all_are_numbers(scheme_list_of_arguments):
             raise SchemeRuntimeError(f"argument {scheme_object} is of incorrect type ")
 
 
+# equivalence predicates
+
+@return_scheme_boolean
+def scheme_is(object1, object2):
+    if type(object1) in [SchemeNumber, SchemeChar]:
+        return object1 == object2
+    else:
+        return object1 is object2
+
+
+@return_scheme_boolean
+def scheme_equal(object1, object2):
+    return object1 == object2
+
+
 # numerical operations
 
 @return_scheme_boolean
@@ -272,7 +287,6 @@ def append_list(scheme_objects):
         current.set_cdr(next_arg.car() if is_list(next_arg) else next_arg)
         scheme_objects = scheme_objects.cdr()
     return first_non_empty_list_or_last_element
-
 
 
 def check_append_args(args):

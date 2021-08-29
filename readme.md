@@ -60,46 +60,46 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
 ## Standard Procedures:
 
 * Done:
-    * Number Operation: 
-      - number? 
-      - integer? 
-      - <
-      - <= 
-      - \> 
-      - \>= 
-      - = 
-      - \+ 
-      - \- 
-      - \/ 
-      - \* 
-      - zero? 
-      - positive? 
-      - negative? 
-      - odd? 
-      - even? 
-      - max 
-      - min 
-      - abs
+  * Equivalence Predicates:
+    - eqv?
+    - eq?
+    - equal?
+  * Number Operation:
+    - number?
+    - integer?
+    - <
+    - <=
+    - \>
+    - \>=
+    - =
+    - \+
+    - \-
+    - \/
+    - \*
+    - zero?
+    - positive?
+    - negative?
+    - odd?
+    - even?
+    - max
+    - min
+    - abs
+  * Booleans:
+    - not
+    - boolean?
+  * Pairs and Lists:
+    - pair?
+    - cons
+    - car
+    - cdr
+    - set-car!
+    - set-cdr!
+    - null?
+    - list?
+    - list
+    - length
+    - append
 * To Do:
-    * Equivalence Predicates:
-        - eqv?
-        - eq?
-        - equal?
-    * Booleans:
-        - not
-        - boolean?
-    * Pairs and Lists:
-        - pair?
-        - cons
-        - car
-        - cdr
-        - set-car!
-        - set-cdr!
-        - null?
-        - list?
-        - list
-        - length
-        - append
     * Control Features
         - procedure?
         - apply

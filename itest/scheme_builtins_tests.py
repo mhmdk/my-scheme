@@ -3,6 +3,40 @@ from itest.test_setup import ExpressionTest
 
 class SchemeBuiltinsTest(ExpressionTest):
 
+    # equivalence predicates
+    def test_eqv(self):
+        self.assertEqual("#t", self.evaluate("(eqv? #t #t)"))
+        self.assertEqual("#f", self.evaluate("(eqv? #t #f)"))
+        self.assertEqual("#t", self.evaluate("(eqv? (quote abc) (quote abc))"))
+        self.assertEqual("#f", self.evaluate("(eqv? (quote abc) (quote def))"))
+        self.assertEqual("#t", self.evaluate("(eqv? 1 (+ 1 0) )"))
+        self.assertEqual("#f", self.evaluate("(eqv? 1 1.0 )"))
+        self.assertEqual("#t", self.evaluate("(define a #\\a) (eqv? #\\a a)"))
+        self.assertEqual("#f", self.evaluate("(eqv? #\\b #\\a )"))
+        self.assertEqual("#t", self.evaluate("(eqv? (quote ()) (list))"))
+        self.assertEqual("#f", self.evaluate("(eqv? (quote (1)) (list 1))"))
+        self.assertEqual("#f", self.evaluate('(eqv?  "abc" "def")'))
+        self.assertEqual("#f", self.evaluate('(define a "abc") (define b "abc") (eqv? a b)'))
+        self.assertEqual("#t", self.evaluate("(define (f x) x) (define g f) (eqv? f g)"))
+        self.assertEqual("#f", self.evaluate("(define (f x) x) (define (g x) (+ x 1)) (eqv? f g)"))
+
+    def test_equal(self):
+        self.assertEqual("#t", self.evaluate("(equal? #t #t)"))
+        self.assertEqual("#f", self.evaluate("(equal? #t #f)"))
+        self.assertEqual("#t", self.evaluate("(equal? (quote abc) (quote abc))"))
+        self.assertEqual("#f", self.evaluate("(equal? (quote abc) (quote def))"))
+        self.assertEqual("#t", self.evaluate("(equal? 1 (+ 1 0) )"))
+        self.assertEqual("#f", self.evaluate("(equal? 1 1.0 )"))
+        self.assertEqual("#t", self.evaluate("(define a #\\a) (equal? #\\a a)"))
+        self.assertEqual("#f", self.evaluate("(equal? #\\b #\\a )"))
+        self.assertEqual("#t", self.evaluate("(equal? (quote ()) (list))"))
+        self.assertEqual("#t", self.evaluate("(equal? (quote (1)) (list 1))"))
+        self.assertEqual("#f", self.evaluate('(equal?  "abc" "def")'))
+        self.assertEqual("#t", self.evaluate('(define a "abc") (define b "abc") (equal? a b)'))
+        self.assertEqual("#t", self.evaluate("(define (f x) x) (define g f) (equal? f g)"))
+        self.assertEqual("#f", self.evaluate("(define (f x) x) (define (g x) (+ x 1)) (equal? f g)"))
+
+    # numeric operations
     def test_arithmetics(self):
         expression = "(+ 1 2 (- 3) (* 4 5) (/ 6 3 1) )"
         expected = "22.0"

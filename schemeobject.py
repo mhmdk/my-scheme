@@ -10,7 +10,7 @@ class SchemeNumber(SchemeObject):
         return str(self.value)
 
     def __eq__(self, other):
-        return isinstance(other, SchemeNumber) and self.value == other.value
+        return isinstance(other, SchemeNumber) and type(self.value) == type(other.value) and self.value == other.value
 
 
 class SchemeChar(SchemeObject):
@@ -25,8 +25,20 @@ class SchemeChar(SchemeObject):
 
 
 class SchemeBool(SchemeObject):
-    def __init__(self, value):
-        self.value = value
+    scheme_true = None
+    scheme_false = None
+
+    def __new__(cls, value):
+        if value:
+            if cls.scheme_true is None:
+                cls.scheme_true = super().__new__(cls)
+                cls.scheme_true.value = True
+            return cls.scheme_true
+        else:
+            if cls.scheme_false is None:
+                cls.scheme_false = super().__new__(cls)
+                cls.scheme_false.value = False
+            return cls.scheme_false
 
     def __eq__(self, other):
         return isinstance(other, SchemeBool) and self.value == other.value
@@ -50,8 +62,16 @@ class SchemeString(SchemeObject):
 
 
 class SchemeSymbol(SchemeObject):
-    def __init__(self, value):
-        self.value = value
+    instances = {}
+
+    def __new__(cls, value):
+        if value not in cls.instances:
+            instance = super().__new__(cls)
+            instance.value = value
+            cls.instances[value] = instance
+        else:
+            instance = cls.instances[value]
+        return instance
 
     def __eq__(self, other):
         return isinstance(other, SchemeSymbol) and self.value == other.value
@@ -96,6 +116,9 @@ class SchemePair(SchemeObject):
         if not self.is_list():
             raise Exception("trying to iterate a non list pair")
         return SchemeListIterator(self)
+
+    def __eq__(self, other):
+        return isinstance(other, SchemePair) and self.car() == other.car() and self.cdr() == other.cdr()
 
     def size(self):
         if not self.is_list():
@@ -152,6 +175,7 @@ def scheme_list_tail(scheme_list):
     while scheme_list.cdr() is not SchemeEmptyList():
         scheme_list = scheme_list.cdr()
     return scheme_list
+
 
 class SchemeProcedure(SchemeObject):
     def __init__(self, **kwargs):
