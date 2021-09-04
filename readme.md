@@ -104,6 +104,7 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
     - apply
     - map
     - for-each
+  * Eval
 * To Do:
     * Control Features
       - force

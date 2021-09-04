@@ -2,6 +2,7 @@ import functools
 import operator
 
 from interpreter import Interpreter
+from environment import Environment
 from schemeobject import *
 
 

@@ -211,6 +211,38 @@ class SchemeBuiltinsTest(ExpressionTest):
                 (map +
                     (quote ( 1 2 3 )) (quote ( 4 5 6 ))) '''))
 
+    def test_eval(self):
+        report_env = "(scheme-report-environment 5)"
+        null_env = "(null-environment 5)"
+        self.assertIn("variable + not found", self.evaluate(f'(eval (quote (+ 1 1)) {null_env})'))
+        self.assertEqual("2", self.evaluate(f'(eval (quote (+ 1 1)) {report_env})'))
+        self.assertEqual("( 1 2 3 )", self.evaluate(f"""(eval 
+        (quote 
+            (append (quote (1 2)) (quote (3)) )
+        )
+        {report_env})"""))
+
+        self.assertEqual("( 2 9 )", self.evaluate(f"""(eval 
+        (quote 
+            (map 
+                (lambda (f x) (f x x))
+                (list + *) (list 1 3) 
+        ))
+        {report_env})"""))
+
+        self.assertEqual("( + 1 2 )", self.evaluate(f"""(eval 
+        (quote 
+             (quote (+ 1 2))
+        )
+        {report_env})"""))
+
+        self.assertIn("not a procedure", self.evaluate(f"""(eval 
+        (quote 
+            ( (quote +) 1 2)
+        )
+        {report_env})"""))
+
+
     def test_force(self):
         pass
 

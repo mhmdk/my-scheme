@@ -1,6 +1,7 @@
 import sys
 
-from interpreter import Interpreter, Environment
+from interpreter import Interpreter
+from environment import Environment
 from lexer import Lexer
 from parser import Parser
 from schemebuiltins import *
@@ -124,6 +125,28 @@ def init_global_environment(environment):
     environment.add('map', BuiltInProcedure(scheme_map, variadic=True))
     environment.add('force', BuiltInProcedure(force, arity=1))
     environment.add('make-promise', BuiltInProcedure(make_promise, arity=1))
+
+    # eval
+    environment.add('eval', BuiltInProcedure(scheme_eval, arity=2))
+    environment.add('scheme-report-environment', BuiltInProcedure(scheme_report_environmnt, arity=1))
+    environment.add('null-environment', BuiltInProcedure(null_environment, arity=1))
+
+
+def scheme_eval(quoted_expression, env):
+    text = str(quoted_expression)
+    return scan_evaluate(text, env)
+
+
+@takes_scheme_number
+def scheme_report_environmnt(version):
+    env = Environment()
+    init_global_environment(env)
+    return env
+
+
+@takes_scheme_number
+def null_environment(version):
+    return Environment()
 
 
 if __name__ == '__main__':
