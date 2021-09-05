@@ -231,17 +231,12 @@ class SchemeBuiltinsTest(ExpressionTest):
         {report_env})"""))
 
         self.assertEqual("( + 1 2 )", self.evaluate(f"""(eval 
-        (quote 
-             (quote (+ 1 2))
-        )
+             ''(+ 1 2) 
         {report_env})"""))
 
         self.assertIn("not a procedure", self.evaluate(f"""(eval 
-        (quote 
-            ( (quote +) 1 2)
-        )
+            '( '+ 1 2)
         {report_env})"""))
-
 
     def test_force(self):
         pass

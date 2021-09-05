@@ -31,7 +31,7 @@ defformals -> identifier*
 expression -> identifier | literal | call | lambda | conditional | assignment
 literal -> quotation | self-evaluating
 self-evaluating -> boolean | character | number | string  
-quotation -> (quote datum)  
+quotation -> 'datum | (quote datum)  
 datum -> boolean | character | number | string | identifier | list
 list -> (datum*)   
 call -> (operator operand*)  

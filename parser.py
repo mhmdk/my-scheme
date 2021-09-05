@@ -1,5 +1,4 @@
 from schemetoken import TokenType, keywords_map
-from schemeexpression import *
 from derivedexpression import *
 
 
@@ -111,8 +110,7 @@ class Parser:
         return expr
 
     def literal(self):
-        token = self.current()
-        if token.type is TokenType.OPEN_PAREN:
+        if self.is_quote():
             return self.quote()
         else:
             return self.non_quote_literal()
@@ -122,23 +120,24 @@ class Parser:
         expr = None
         if token.type is TokenType.NUMBER:
             expr = NumberLiteral(token.lexeme)
-            self.advance()
         elif token.type is TokenType.BOOLEAN:
             expr = BoolLiteral(token.lexeme)
-            self.advance()
         elif token.type is TokenType.CHARACTER:
             expr = CharLiteral(token.lexeme)
-            self.advance()
         elif token.type is TokenType.STRING:
             expr = StringLiteral(token.lexeme)
-            self.advance()
+        self.advance()
         return expr
 
     def quote(self):
-        self.consume(TokenType.OPEN_PAREN)
-        self.consume(TokenType.QUOTE)
-        expr = self.datum()
-        self.consume(TokenType.CLOSE_PAREN)
+        if self.current_token_has_type(TokenType.OPEN_PAREN):
+            self.consume(TokenType.OPEN_PAREN)
+            self.consume(TokenType.QUOTE)
+            expr = self.datum()
+            self.consume(TokenType.CLOSE_PAREN)
+        else:
+            self.consume(TokenType.SINGLE_QUOTE)
+            expr = self.datum()
         return expr
 
     def datum(self):
@@ -146,6 +145,8 @@ class Parser:
             return self.list()
         elif self.is_non_quote_literal():
             return self.non_quote_literal()
+        elif self.current_token_has_type(TokenType.SINGLE_QUOTE):
+            return self.single_quote_as_datum()
         else:
             return self.symbol()
 
@@ -157,6 +158,11 @@ class Parser:
         else:
             # to raise an error, TODO change this when we have error recovery mechanism
             self.expect(TokenType.IDENTIFIER)
+
+    def single_quote_as_datum(self):
+        self.consume(TokenType.SINGLE_QUOTE)
+        next_datum = self.datum()
+        return QuotedList([Symbol('quote'), next_datum])
 
     def list(self):
         self.consume(TokenType.OPEN_PAREN)
@@ -391,7 +397,8 @@ class Parser:
                                            TokenType.STRING)
 
     def is_quote(self):
-        return self.next_two_tokens_have_types(TokenType.OPEN_PAREN, TokenType.QUOTE)
+        return self.current_token_has_type(TokenType.SINGLE_QUOTE) or \
+               self.next_two_tokens_have_types(TokenType.OPEN_PAREN, TokenType.QUOTE)
 
     def is_definition(self):
         return self.next_two_tokens_have_types(TokenType.OPEN_PAREN, TokenType.DEFINE)

@@ -141,6 +141,52 @@ class ParserTest(unittest.TestCase):
         types = [type(node) for node in quoted_list.elements]
         self.assertEqual(types, [NumberLiteral, Symbol, QuotedList])
 
+    def test_quoted_symbol_with_single_quotation(self):
+        tokens = [TokenType.SINGLE_QUOTE, TokenType.OPEN_PAREN, TokenType.IDENTIFIER,
+                  TokenType.STRING, TokenType.CLOSE_PAREN]
+        quoted_list = build_tokens_of_types(tokens)
+        syntax_tree = Parser(quoted_list).parse()
+        quoted_list = syntax_tree.nodes[0]
+        self.assertIs(type(quoted_list), QuotedList)
+        types = [type(node) for node in quoted_list.elements]
+        self.assertEqual(types, [Symbol, StringLiteral])
+
+    def test_quoted_list_with_single_quotation(self):
+        tokens = [Token("'", TokenType.SINGLE_QUOTE, 0, 0), Token("This-is-a-symbol", TokenType.IDENTIFIER, 0, 0)]
+        syntax_tree = Parser(tokens).parse()
+        symbol = syntax_tree.nodes[0]
+        self.assertIs(type(symbol), Symbol)
+        self.assertEqual(symbol.symbol, "This-is-a-symbol")
+
+    def test_nested_single_quote(self):
+        tokens = [Token("'", TokenType.SINGLE_QUOTE, 0, 0), Token("'", TokenType.SINGLE_QUOTE, 0, 0),
+                  Token("a", TokenType.IDENTIFIER, 0, 0)]
+        syntax_tree = Parser(tokens).parse()
+        quoted_list = syntax_tree.nodes[0]
+        self.assertEqual(type(quoted_list), QuotedList)
+        self.assertEqual(type(quoted_list.elements[0]), Symbol)
+        self.assertEqual(quoted_list.elements[0].symbol, 'quote')
+        self.assertEqual(type(quoted_list.elements[1]), Symbol)
+        self.assertEqual(quoted_list.elements[1].symbol, 'a')
+
+    def test_nested_single_quote_in_list(self):
+        tokens = [Token("'", TokenType.SINGLE_QUOTE, 0, 0), Token("(", TokenType.OPEN_PAREN, 0, 0),
+                  Token("a", TokenType.IDENTIFIER, 0, 0), Token("'", TokenType.SINGLE_QUOTE, 0, 0),
+                  Token("1", TokenType.NUMBER, 0, 0), Token("#t", TokenType.BOOLEAN, 0, 0),
+                  Token(")", TokenType.CLOSE_PAREN, 0, 0)]
+        syntax_tree = Parser(tokens).parse()
+        quoted_list = syntax_tree.nodes[0]
+        self.assertEqual(type(quoted_list), QuotedList)
+        types = [type(node) for node in quoted_list.elements]
+        self.assertEqual(types, [Symbol, QuotedList, BoolLiteral])
+        inner_quote = quoted_list.elements[1]
+        quote_as_symbol = inner_quote.elements[0]
+        inner_quote_datum = inner_quote.elements[1]
+        self.assertEqual(type(quote_as_symbol), Symbol)
+        self.assertEqual(quote_as_symbol.symbol, 'quote')
+        self.assertEqual(type(inner_quote_datum), NumberLiteral)
+        self.assertEqual(inner_quote_datum.lexeme, '1')
+
     def test_conditional(self):
         tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.IF, TokenType.BOOLEAN,
                                         TokenType.STRING, TokenType.CLOSE_PAREN])

@@ -32,6 +32,7 @@ class TokenType(Enum):
     CLOSE_PAREN = auto()
     DOT = auto()
 
+    SINGLE_QUOTE = auto()
     COMMENT = auto()
 
 

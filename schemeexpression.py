@@ -36,8 +36,8 @@ class StringLiteral(Expression):
 
 
 class QuotedList(Expression):
-    def __init__(self):
-        self.elements = []
+    def __init__(self, elements=None):
+        self.elements = [] if elements is None else elements
 
     def accept(self, syntax_tree_visitor):
         return syntax_tree_visitor.visit_list(self)

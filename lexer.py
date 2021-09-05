@@ -1,5 +1,6 @@
 from schemetoken import Token, TokenType, keywords_map
 
+
 # ##Lexical Grammar:##
 # reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.1
 #
@@ -82,8 +83,11 @@ class Lexer:
         elif current_char == ')':
             return self.closeparenthesis()
 
+        elif current_char == "'":
+            return self.single_quote()
+
         elif current_char == ';':
-             self.comment()
+            self.comment()
 
         else:
             self.raiseerror(f"unexpected character {current_char}")
@@ -190,6 +194,10 @@ class Lexer:
     def closeparenthesis(self):
         self.advance()
         return self.maketoken(')', TokenType.CLOSE_PAREN)
+
+    def single_quote(self):
+        self.advance()
+        return self.maketoken("'", TokenType.SINGLE_QUOTE)
 
     def comment(self):
         lexeme = self.text[self.current_index]

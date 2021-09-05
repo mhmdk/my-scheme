@@ -54,6 +54,14 @@ class InterpreterTests(unittest.TestCase):
         hello_result = self.interpreter.visit_symbol(hello_symbol)
         self.assertEqual('hello', hello_result.value)
 
+    def test_quoted_list(self):
+        quoted_list = QuotedList()
+        quoted_list.elements = [NumberLiteral("1"), StringLiteral('"abc"')]
+        result = self.interpreter.visit_list(quoted_list)
+        self.assertEqual(type(result), SchemePair)
+        self.assertEqual(result.car().value, 1)
+        self.assertEqual(result.cdr().car().value, "abc")
+
     def test_true_conditional(self):
         conditional = Conditional(NumberLiteral('1'), NumberLiteral('2'), StringLiteral('"hello"'))
         conditional_result = self.interpreter.visit_conditional(conditional)
