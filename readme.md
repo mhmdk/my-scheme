@@ -1,5 +1,5 @@
 
-![unit tests](https://github.com/mhmdk/my-scheme/blob/master/.github/workflows/main.yml/badge.svg)
+![unit tests](https://github.com/mhmdk/my-scheme/actions/workflows/main.yml/badge.svg)
 
 ## Lexical Grammar:
 reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.1  
