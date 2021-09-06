@@ -1,7 +1,5 @@
 import sys
 
-from interpreter import Interpreter
-from environment import Environment
 from lexer import Lexer
 from parser import Parser
 from schemebuiltins import *
@@ -10,15 +8,15 @@ from schemeobject import BuiltInProcedure
 global_env = Environment()
 
 
-def main():
+def main(args):
     init_global_environment(global_env)
-    args = sys.argv
     if len(args) == 1:
         repl()
     else:
         filename = args[1]
         program = open(filename, 'r')
-        scan_evaluate(program.read(), global_env)
+        value = scan_evaluate(program.read(), global_env)
+        scheme_print(value)
 
 
 def scheme_print(value):
@@ -30,8 +28,7 @@ def repl():
         try:
             expression = input("-> ")
             value = scan_evaluate(expression, global_env)
-            if value is not None:
-                scheme_print(value)
+            scheme_print(value)
         except EOFError:
             break
 
@@ -150,4 +147,4 @@ def null_environment(version):
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
