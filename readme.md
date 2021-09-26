@@ -107,12 +107,9 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
     - apply
     - map
     - for-each
+    - force
+    - make-promise
   * Eval
-* To Do:
-    * Control Features
-      - force
-      - make-promise
-            
-    
+  
 for a complete list of possible procedures: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_chap_6
         

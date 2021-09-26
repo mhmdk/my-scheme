@@ -17,6 +17,7 @@ class TokenType(Enum):
     LET = auto()
     LETSTAR = auto()
     LETREC = auto()
+    DELAY = auto()
 
     # identifier
     IDENTIFIER = auto()
@@ -50,7 +51,8 @@ keywords_map = {
     "case": TokenType.CASE,
     "let": TokenType.LET,
     "let*": TokenType.LETSTAR,
-    "letrec": TokenType.LETREC
+    "letrec": TokenType.LETREC,
+    "delay": TokenType.DELAY
 }
 
 

@@ -96,6 +96,8 @@ class Parser:
                 expr = self.and_expression()
             elif self.current_token_has_type(TokenType.OR):
                 expr = self.or_expression()
+            elif self.current_token_has_type(TokenType.DELAY):
+                expr = self.delay()
             else:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
@@ -334,6 +336,11 @@ class Parser:
         expressions = self.sequence()
         return make_or(expressions)
 
+    def delay(self):
+        self.consume(TokenType.DELAY)
+        expression = self.expression()
+        return make_delay(expression)
+
     def raise_error(self, message, token=None):
         if token is not None:
             enriched_message = f"parse error at {token.lexeme},line {token.line_number}, column {token.column_number}: {message}"
@@ -409,3 +416,5 @@ class Parser:
         if current_token is None or next_token is None:
             return False
         return current_token.type is current_token_type and next_token.type is next_token_type
+
+

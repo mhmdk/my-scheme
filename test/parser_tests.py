@@ -417,6 +417,15 @@ class ParserTest(unittest.TestCase):
         self.assertIs(len(or_expression.args.args), 1)
         self.assertIs(type(or_expression.callee.body[0]), Conditional)
 
+    def test_delay(self):
+        tokens = build_tokens_of_types([TokenType.OPEN_PAREN, TokenType.DELAY, TokenType.NUMBER, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        delay_expression = syntax_tree.nodes[0]
+        self.assertIs(type(delay_expression), Call)
+        self.assertIs(len(delay_expression.args.args), 1)
+        self.assertIs(type(delay_expression.callee), VariableReference)
+        self.assertEqual(delay_expression.callee.variable_name, 'make-promise')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -85,3 +85,9 @@ def make_or(tests):
     test_result_variable_reference = VariableReference(test_result_variable_name)
     let_body = [Conditional(test_result_variable_reference, test_result_variable_reference, make_or(tests[1:]))]
     return make_let([LetBinding(test_result_variable_name, tests[0])], let_body)
+
+
+def make_delay(exp):
+    arguments = Args()
+    arguments.add(Lambda(FormalParameters(), exp))
+    return Call(VariableReference('make-promise'), arguments)

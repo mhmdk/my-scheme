@@ -132,8 +132,8 @@
 (define (add-action! wire action-procedure)
   ((wire 'add-action!) action-procedure))
 
-(define (after-delay delay action)
-  (add-to-agenda! (+ delay (current-time the-agenda))
+(define (after-delay delay-time action)
+  (add-to-agenda! (+ delay-time (current-time the-agenda))
                   action
                   the-agenda))
 
@@ -229,8 +229,6 @@
                  name (current-time the-agenda)
                  'to (get-signal wire)))
                  )))
-
-;expected: 1
 
 (define the-agenda (make-agenda))
 (define inverter-delay 2)
