@@ -304,6 +304,130 @@ def check_append_args(args):
         args = args.cdr()
 
 
+def query_pair(scheme_pair, query_string):
+    # remove the c and r from caddr for example
+    query = reversed(query_string[1: len(query_string) - 1])
+    current = scheme_pair
+    for character in query:
+        if character == 'd':
+            current = cdr(current)
+        elif character == 'a':
+            current = car(current)
+    return current
+
+
+def caar(scheme_pair):
+    return query_pair(scheme_pair, "caar")
+
+
+def cadr(scheme_pair):
+    return query_pair(scheme_pair, "cadr")
+
+
+def cdar(scheme_pair):
+    return query_pair(scheme_pair, "cdar")
+
+
+def cddr(scheme_pair):
+    return query_pair(scheme_pair, "cddr")
+
+
+def caaar(scheme_pair):
+    return query_pair(scheme_pair, "caaar")
+
+
+def caadr(scheme_pair):
+    return query_pair(scheme_pair, "caadr")
+
+
+def cadar(scheme_pair):
+    return query_pair(scheme_pair, "cadar")
+
+
+def caddr(scheme_pair):
+    return query_pair(scheme_pair, "caddr")
+
+
+def cdaar(scheme_pair):
+    return query_pair(scheme_pair, "cdaar")
+
+
+def cdadr(scheme_pair):
+    return query_pair(scheme_pair, "cdadr")
+
+
+def cddar(scheme_pair):
+    return query_pair(scheme_pair, "cddar")
+
+
+def cdddr(scheme_pair):
+    return query_pair(scheme_pair, "cdddr")
+
+
+def caaaar(scheme_pair):
+    return query_pair(scheme_pair, "caaaar")
+
+
+def caaadr(scheme_pair):
+    return query_pair(scheme_pair, "caaadr")
+
+
+def caadar(scheme_pair):
+    return query_pair(scheme_pair, "caadar")
+
+
+def caaddr(scheme_pair):
+    return query_pair(scheme_pair, "caaddr")
+
+
+def cadaar(scheme_pair):
+    return query_pair(scheme_pair, "cadaar")
+
+
+def cadadr(scheme_pair):
+    return query_pair(scheme_pair, "cadadr")
+
+
+def caddar(scheme_pair):
+    return query_pair(scheme_pair, "caddar")
+
+
+def cadddr(scheme_pair):
+    return query_pair(scheme_pair, "cadddr")
+
+
+def cdaaar(scheme_pair):
+    return query_pair(scheme_pair, "cdaaar")
+
+
+def cdaadr(scheme_pair):
+    return query_pair(scheme_pair, "cdaadr")
+
+
+def cdadar(scheme_pair):
+    return query_pair(scheme_pair, "cdadar")
+
+
+def cdaddr(scheme_pair):
+    return query_pair(scheme_pair, "cdaddr")
+
+
+def cddaar(scheme_pair):
+    return query_pair(scheme_pair, "cddaar")
+
+
+def cddadr(scheme_pair):
+    return query_pair(scheme_pair, "cddadr")
+
+
+def cdddar(scheme_pair):
+    return query_pair(scheme_pair, "cdddar")
+
+
+def cddddr(scheme_pair):
+    return query_pair(scheme_pair, "cddddr")
+
+
 # control features
 @return_scheme_boolean
 def is_procedure(scheme_object):

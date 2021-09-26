@@ -6,6 +6,7 @@ from itest.test_setup import ExpressionTest
 def find_expected(program_text):
     lines = program_text.splitlines()
     for line in lines:
+        line = line.strip()
         if line.startswith(";expected:"):
             return line.split(':')[1].strip()
 

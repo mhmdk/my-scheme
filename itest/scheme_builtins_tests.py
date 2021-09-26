@@ -169,6 +169,15 @@ class SchemeBuiltinsTest(ExpressionTest):
         self.assertEqual("( 1 . ( 2 . ( 3 . ( 4 . ( 5 . ( 6 . 7 ) ) ) ) ) )",
                          self.evaluate("(append (list 1 2 3) (list 4 5) (cons 6 7) )"))
 
+    def test_caddar(self):
+        self.assertEqual("( 3 4 )", self.evaluate("""(caddar
+         (list 
+         (cons 1 
+         (cons 2 
+         (cons (list 3 4) 5
+         )))
+         6) 
+         )"""))
     # control features
     def test_is_procedure(self):
         self.assertEqual("#f", self.evaluate("(procedure? #t)"))

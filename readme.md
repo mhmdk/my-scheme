@@ -96,6 +96,7 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
     - cdr
     - set-car!
     - set-cdr!
+    - caar ... cddddr
     - null?
     - list?
     - list
