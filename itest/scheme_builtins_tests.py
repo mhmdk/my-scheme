@@ -247,8 +247,10 @@ class SchemeBuiltinsTest(ExpressionTest):
             '( '+ 1 2)
         {report_env})"""))
 
-    def test_force(self):
-        pass
+    def test_make_promise_force(self):
+        self.assertEqual("11", self.evaluate(f"""
+        (let ((x 0))
+        (define pr (make-promise (lambda () (+ x 1))))
+        (set! x 10)
+        (force pr))"""))
 
-    def test_make_promise(self):
-        pass

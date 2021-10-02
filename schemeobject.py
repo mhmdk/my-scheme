@@ -215,6 +215,24 @@ class UserDefinedProcedure(SchemeProcedure):
         return f"scheme user defined procedure"
 
 
+class SchemePromise(SchemeObject):
+    def __init__(self, procedure):
+        self.procedure = procedure
+        self.result = None
+
+    def __str__(self):
+        return f"scheme promise"
+
+    def has_result(self):
+        return self.result is not None
+
+    def get_result(self):
+        return self.result
+
+    def set_result(self, value):
+        self.result = value
+
+
 class UnAssigned(SchemeObject):
     def __eq__(self, other):
         return isinstance(other, UnAssigned)

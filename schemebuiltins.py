@@ -483,9 +483,21 @@ def scheme_map(scheme_objects):
     return make_scheme_list(results)
 
 
+def check_make_promise_arg(arg):
+    check_argument_type(arg, is_procedure)
+    if not arg.arity == 0:
+        raise SchemeRuntimeError("make-promise takes a procedure with 0 arguments")
+
+
 def force(promise):
-    pass
+    check_argument_type(promise, lambda arg: type(arg) is SchemePromise)
+    if not promise.has_result():
+        value = apply_impl(promise.procedure, [])
+        # need to check again , as promise evaluation may refer to itself
+        if not promise.has_result():
+            promise.set_result(value)
+    return promise.get_result()
 
 
 def make_promise(proc):
-    pass
+    return SchemePromise(proc)

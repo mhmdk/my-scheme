@@ -63,3 +63,43 @@ class DerivedExpressionsTest(ExpressionTest):
         expression = "(or #f (+ 1 2) (undefined_function 1 2) )"
         expected = "3"
         self.assertEqual(expected, self.evaluate(expression))
+
+    def test_delay(self):
+        expression = """
+        (define x 1)
+        (define lazy (delay (+ 1 x)))
+        (define eager  (+ 1 x))
+        (set! x 10)
+        (cons (force lazy) eager)"""
+        expected = "( 11 . 2 )"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_promise_should_be_evaluated_only_once(self):
+        expression = """
+        (define count 0)
+        (define p
+          (delay (begin (set! count (+ count 1))
+                        (if (> count x)
+                            count
+                            (force p)))))
+        (define x 5)
+        (force p)                     ;;===>  6
+        (begin (set! x 10)
+        (force p))             ;;===>  6"""
+
+        expected = "6"
+        self.assertEqual(expected, self.evaluate(expression))
+
+    def test_promise_should_be_evaluated_only_once_when_referring_to_itself(self):
+        expression = """
+        (define count 0)
+        (define p
+          (delay (begin (set! count (+ count 1))
+                        (if (> count x)
+                            count
+                            (+ (force p) 1) ))))
+        (define x 5)
+        (force p)"""
+
+        expected = "6"
+        self.assertEqual(expected, self.evaluate(expression))

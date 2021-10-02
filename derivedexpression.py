@@ -89,5 +89,5 @@ def make_or(tests):
 
 def make_delay(exp):
     arguments = Args()
-    arguments.add(Lambda(FormalParameters(), exp))
+    arguments.add(Lambda(FormalParameters(), [exp]))
     return Call(VariableReference('make-promise'), arguments)
