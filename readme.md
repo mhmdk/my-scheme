@@ -1,7 +1,7 @@
 
 ![unit tests](https://github.com/mhmdk/my-scheme/actions/workflows/main.yml/badge.svg)
 
-a handcrafted scheme interpreter, with lexical scoping, closures, and delayed evaluation enabling use of streams, as in [smaple programs](sample_programs)
+A handcrafted scheme interpreter, with lexical scoping, closures, and delayed evaluation enabling use of streams, as in [smaple programs](sample_programs)
 
 ## Lexical Grammar:
 reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.1  
