@@ -25,6 +25,11 @@ def check_argument_type(scheme_object, check_function):
         raise SchemeRuntimeError(f"argument {scheme_object} is of incorrect type ")
 
 
+def check_zero_division(denominators):
+    if not all(map(lambda num: num != 0, denominators)):
+        raise SchemeRuntimeError(f"divison by zero")
+
+
 def make_check_and_call_function(function_to_call, check_type_function):
     def wrapper(*args, **kwargs):
         check_argument_type(args[0], check_type_function)
@@ -211,14 +216,25 @@ def multiply(list_of_numbers):
 @minimum_required_args('/', 1)
 def divide(list_of_numbers):
     if list_of_numbers.size() == 1:
+        check_zero_division(list_of_numbers.car())
         return 1 / list_of_numbers.car().value
-    return functools.reduce(operator.truediv, [number.value for number in list_of_numbers])
+    numbers = [number.value for number in list_of_numbers]
+    check_zero_division(numbers[1:])
+    return functools.reduce(operator.truediv, numbers)
 
 
 @return_scheme_number
 @takes_scheme_number
 def absolute_value(scheme_object):
     return abs(scheme_object.value)
+
+
+@return_scheme_number
+def remainder(numerator, denominator):
+    check_argument_type(numerator, is_integer)
+    check_argument_type(denominator, is_integer)
+    check_zero_division([denominator])
+    return numerator.value % denominator.value
 
 
 # booleans

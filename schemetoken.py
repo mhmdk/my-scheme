@@ -18,7 +18,8 @@ class TokenType(Enum):
     LETSTAR = auto()
     LETREC = auto()
     DELAY = auto()
-
+    CONS_STREAM = auto()
+    
     # identifier
     IDENTIFIER = auto()
 
@@ -52,7 +53,8 @@ keywords_map = {
     "let": TokenType.LET,
     "let*": TokenType.LETSTAR,
     "letrec": TokenType.LETREC,
-    "delay": TokenType.DELAY
+    "delay": TokenType.DELAY,
+    "cons-stream": TokenType.CONS_STREAM
 }
 
 

@@ -426,6 +426,19 @@ class ParserTest(unittest.TestCase):
         self.assertIs(type(delay_expression.callee), VariableReference)
         self.assertEqual(delay_expression.callee.variable_name, 'make-promise')
 
+    def test_cons_stream(self):
+        tokens = build_tokens_of_types(
+            [TokenType.OPEN_PAREN, TokenType.CONS_STREAM, TokenType.NUMBER, TokenType.NUMBER, TokenType.CLOSE_PAREN])
+        syntax_tree = Parser(tokens).parse()
+        cons_stream_call = syntax_tree.nodes[0]
+        self.assertIs(type(cons_stream_call), Call)
+        self.assertIs(len(cons_stream_call.args.args), 2)
+        self.assertIs(type(cons_stream_call.callee), VariableReference)
+        self.assertEqual(cons_stream_call.callee.variable_name, 'cons')
+        self.assertIs(type(cons_stream_call.args.args[1]), Call)
+        self.assertIs(type(cons_stream_call.args.args[1].callee), VariableReference)
+        self.assertEqual(cons_stream_call.args.args[1].callee.variable_name, 'make-promise')
+
 
 if __name__ == '__main__':
     unittest.main()

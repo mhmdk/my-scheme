@@ -98,6 +98,8 @@ class Parser:
                 expr = self.or_expression()
             elif self.current_token_has_type(TokenType.DELAY):
                 expr = self.delay()
+            elif self.current_token_has_type(TokenType.CONS_STREAM):
+                expr = self.cons_stream()
             else:
                 expr = self.call()
             self.consume(TokenType.CLOSE_PAREN)
@@ -340,6 +342,12 @@ class Parser:
         self.consume(TokenType.DELAY)
         expression = self.expression()
         return make_delay(expression)
+
+    def cons_stream(self):
+        self.consume(TokenType.CONS_STREAM)
+        first = self.expression()
+        second = self.expression()
+        return make_cons_stream(first, second)
 
     def raise_error(self, message, token=None):
         if token is not None:

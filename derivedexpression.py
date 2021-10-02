@@ -91,3 +91,11 @@ def make_delay(exp):
     arguments = Args()
     arguments.add(Lambda(FormalParameters(), [exp]))
     return Call(VariableReference('make-promise'), arguments)
+
+
+def make_cons_stream(exp1, exp2):
+    delayed_exp2 = make_delay(exp2)
+    arguments = Args()
+    arguments.add(exp1)
+    arguments.add(delayed_exp2)
+    return Call(VariableReference('cons'), arguments)
