@@ -1,5 +1,6 @@
 
 ![unit tests](https://github.com/mhmdk/my-scheme/actions/workflows/main.yml/badge.svg)
+![static code analysis](https://github.com/mhmdk/my-scheme/actions/workflows/codeql-analysis.yml/badge.svg)
 
 A handcrafted scheme interpreter, with lexical scoping, closures, and delayed evaluation enabling use of streams, as in [sample programs](sample_programs)
 
