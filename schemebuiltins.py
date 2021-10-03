@@ -55,8 +55,8 @@ def minimum_required_args(function_name, minimum_number_of_args):
             scheme_list = args[0]
             if scheme_list.size() < minimum_number_of_args:
                 raise SchemeRuntimeError(
-                    f"procedure {function_name} requires at least {minimum_number_of_args} \
-                    argument{'' if minimum_number_of_args == 1 else 's'} ")
+                    f"procedure {function_name} requires at least {minimum_number_of_args}"
+                    f" argument{'' if minimum_number_of_args == 1 else 's'}")
             return function(*args, **kwargs)
 
         return wrapper
