@@ -93,6 +93,10 @@ class SchemeBuiltinsTest(ExpressionTest):
         self.assertEqual("8", self.evaluate("(max -2 5 6 7 -100 8)"))
         self.assertTrue(self.evaluate("(max )").count("at least 1 argument") > 0)
 
+    def test_remainder(self):
+        self.assertEqual("0", self.evaluate("(remainder 4 2 )"))
+        self.assertEqual("1", self.evaluate("(remainder 4 3 )"))
+
     def test_abs(self):
         self.assertEqual("1001.6", self.evaluate("(abs -1001.6 )"))
         self.assertEqual("8", self.evaluate("(abs 8)"))
@@ -178,6 +182,7 @@ class SchemeBuiltinsTest(ExpressionTest):
          )))
          6) 
          )"""))
+
     # control features
     def test_is_procedure(self):
         self.assertEqual("#f", self.evaluate("(procedure? #t)"))
@@ -195,6 +200,14 @@ class SchemeBuiltinsTest(ExpressionTest):
                         (f (apply g args)))))
 
             ((compose list *) 10 20)'''))
+
+    def test_apply_with_closures(self):
+        self.assertEqual("6", self.evaluate("""
+            (define (make-adder x)
+                (lambda (y) (+ x y)))
+            (define one-adder (make-adder 1))
+            (apply one-adder '(5))
+            """))
 
     def test_for_each(self):
         self.assertEqual("( ( 0 . 1 ) ( 0 . 1 ) ( 0 . 1 ) ( 0 . 1 ) ( 0 . 1 ) )", self.evaluate('''
@@ -253,4 +266,3 @@ class SchemeBuiltinsTest(ExpressionTest):
         (define pr (make-promise (lambda () (+ x 1))))
         (set! x 10)
         (force pr))"""))
-

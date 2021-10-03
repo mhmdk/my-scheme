@@ -462,7 +462,6 @@ def check_apply_args(args):
 
 
 def apply_impl(procedure, args):
-    # TODO add tests in combination with closures
     return Interpreter().do_apply(procedure, args)
 
 
