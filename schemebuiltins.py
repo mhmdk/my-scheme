@@ -215,10 +215,10 @@ def multiply(list_of_numbers):
 @takes_scheme_list_of_numbers
 @minimum_required_args('/', 1)
 def divide(list_of_numbers):
-    if list_of_numbers.size() == 1:
-        check_zero_division(list_of_numbers.car())
-        return 1 / list_of_numbers.car().value
     numbers = [number.value for number in list_of_numbers]
+    if list_of_numbers.size() == 1:
+        numbers = [1] + numbers
+
     check_zero_division(numbers[1:])
     return functools.reduce(operator.truediv, numbers)
 
