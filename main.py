@@ -4,6 +4,7 @@ from lexer import Lexer
 from parser import Parser
 from schemebuiltins import *
 from schemeobject import BuiltInProcedure
+from environment import Environment
 
 global_env = Environment()
 

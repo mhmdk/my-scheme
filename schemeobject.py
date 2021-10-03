@@ -10,7 +10,8 @@ class SchemeNumber(SchemeObject):
         return str(self.value)
 
     def __eq__(self, other):
-        return isinstance(other, SchemeNumber) and type(self.value) == type(other.value) and self.value == other.value
+        return isinstance(other, SchemeNumber) and isinstance(self.value,
+                                                              type(other.value)) and self.value == other.value
 
 
 class SchemeChar(SchemeObject):

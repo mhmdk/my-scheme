@@ -61,8 +61,7 @@ class Conditional(Expression):
         return syntax_tree_visitor.visit_conditional(self)
 
 
-class Args():
-    # TODO can this be replaced by a quoted list?
+class Args:
     def __init__(self):
         self.args = []
 

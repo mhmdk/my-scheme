@@ -351,7 +351,8 @@ class Parser:
 
     def raise_error(self, message, token=None):
         if token is not None:
-            enriched_message = f"parse error at {token.lexeme},line {token.line_number}, column {token.column_number}: {message}"
+            enriched_message = f"parse error at {token.lexeme},line {token.line_number}, \
+            column {token.column_number}: {message}"
         else:
             enriched_message = message
         self.errors.append(enriched_message)
@@ -424,5 +425,3 @@ class Parser:
         if current_token is None or next_token is None:
             return False
         return current_token.type is current_token_type and next_token.type is next_token_type
-
-
