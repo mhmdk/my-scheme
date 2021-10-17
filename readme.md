@@ -9,13 +9,13 @@ reduced version of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-1
 
 token -> keyword | identifier | number | string | boolean | character | ( | ) | .  
 comment -> ; all characters until line break  
-keyword -> else | define | quote | lambda | if | set! | begin | cond | and | or | case | let | let* | letrec | delay
+keyword -> else | define | quote | lambda | if | set! | begin | cond | and | or | case | let | let* | letrec | delay  
 identifier -> initial subsequent* | peculiaridentifier  
 initial -> alpha | ! | $ | % | & | * | / | : | < | = | > | ? | ^ | _ | ~  
 subsequent -> initial | digit | + | - | .  
 peculiaridentifier -> + | -  
 number -> sign? (digit*.digit+ | digit+.digit*)  
-string -> "any character except "*"    
+string -> "any character except "*"  
 character -> #\any character | #\newline | #\space  
 boolean -> #t | #f  
 alpha -> a | b | ... | Z  
@@ -36,10 +36,10 @@ defformals -> identifier*
 expression -> identifier | literal | call | lambda | conditional | assignment  
 literal -> quotation | self-evaluating  
 self-evaluating -> boolean | character | number | string  
-quotation -> 'datum | (quote datum)    
+quotation -> 'datum | (quote datum)  
 datum -> boolean | character | number | string | identifier | list  
-list -> (datum*)     
-call -> (operator operand*)    
+list -> (datum*)  
+call -> (operator operand*)  
 operator -> expression  
 operand -> expression  
 lambda -> ("lambda" formals body)    
@@ -62,53 +62,53 @@ https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5
 ## Standard Procedures:
 
 * Equivalence Predicates:
- - eqv?
- - eq?
- - equal?
+  - eqv?
+  - eq?
+  - equal?
 * Number Operation:
- - number?
- - integer?
- - <
- - <=
- - \>
- - \>=
- - =
- - \+
- - \-
- - \/
- - \*
- - zero?
- - positive?
- - negative?
- - odd?
- - even?
- - max
- - min
- - abs
- - remainder
+  - number?
+  - integer?
+  - <
+  - <=
+  - \>
+  - \>=
+  - =
+  - \+
+  - \-
+  - \/
+  - \*
+  - zero?
+  - positive?
+  - negative?
+  - odd?
+  - even?
+  - max
+  - min
+  - abs
+  - remainder
 * Booleans:
- - not
- - boolean?
+  - not
+  - boolean?
 * Pairs and Lists:
- - pair?
- - cons
- - car
- - cdr
- - set-car!
- - set-cdr!
- - caar ... cddddr
- - null?
- - list?
- - list
- - length
- - append
+  - pair?
+  - cons
+  - car
+  - cdr
+  - set-car!
+  - set-cdr!
+  - caar ... cddddr
+  - null?
+  - list?
+  - list
+  - length
+  - append
 * Control Features
- - procedure?
- - apply
- - map
- - for-each
- - force
- - make-promise
+  - procedure?
+  - apply
+  - map
+  - for-each
+  - force
+  - make-promise
 * Eval
   
 for a complete list of possible procedures: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_chap_6  
