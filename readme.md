@@ -30,90 +30,86 @@ https://docs.microsoft.com/en-us/cpp/c-language/lexical-grammar?view=msvc-160
 ## Syntax Grammar: 
 Subset of https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.3  
 
-program -> (expression | definition)*
-definition -> (define identifier expression) | (define (identifier defformals) body)
-defformals -> identifier*
-expression -> identifier | literal | call | lambda | conditional | assignment
-literal -> quotation | self-evaluating
+program -> (expression | definition)*  
+definition -> (define identifier expression) | (define (identifier defformals) body)  
+defformals -> identifier*  
+expression -> identifier | literal | call | lambda | conditional | assignment  
+literal -> quotation | self-evaluating  
 self-evaluating -> boolean | character | number | string  
-quotation -> 'datum | (quote datum)  
-datum -> boolean | character | number | string | identifier | list
-list -> (datum*)   
-call -> (operator operand*)  
+quotation -> 'datum | (quote datum)    
+datum -> boolean | character | number | string | identifier | list  
+list -> (datum*)     
+call -> (operator operand*)    
 operator -> expression  
 operand -> expression  
-lambda -> ("lambda" formals body)  
-formals -> identifier | (identifier*)   
+lambda -> ("lambda" formals body)    
+formals -> identifier | (identifier*)     
 body -> defintion* expression+  
-conditional -> ("if" test consequent alternate?)  
+conditional -> ("if" test consequent alternate?)    
 test -> expression  
 consequent -> expression  
 alternate -> expression  
-assignment -> (set! identifier expression)
+assignment -> (set! identifier expression)  
 
-in addition to derived expressions: cond, and, or, let, let*, letrec, begin, delay
-for a list of derived expressions: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4
+in addition to derived expressions: cond, and, or, let, let*, letrec, begin, delay  
+for a list of derived expressions: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-7.html#%_chap_4  
 
-to consider adding:
-dot notation for pairs, including pairs in quoted expressions and formal parameters.  
-
-see also:  
+see also:   
 https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-10.html#%_sec_7.1.3  
 https://schemers.org/Documents/Standards/R5RS/HTML/ chapters 4 & 5  
 
 
 ## Standard Procedures:
 
-* Done:
-  * Equivalence Predicates:
-    - eqv?
-    - eq?
-    - equal?
-  * Number Operation:
-    - number?
-    - integer?
-    - <
-    - <=
-    - \>
-    - \>=
-    - =
-    - \+
-    - \-
-    - \/
-    - \*
-    - zero?
-    - positive?
-    - negative?
-    - odd?
-    - even?
-    - max
-    - min
-    - abs
-    - remainder
-  * Booleans:
-    - not
-    - boolean?
-  * Pairs and Lists:
-    - pair?
-    - cons
-    - car
-    - cdr
-    - set-car!
-    - set-cdr!
-    - caar ... cddddr
-    - null?
-    - list?
-    - list
-    - length
-    - append
-  * Control Features
-    - procedure?
-    - apply
-    - map
-    - for-each
-    - force
-    - make-promise
-  * Eval
+* Equivalence Predicates:
+ - eqv?
+ - eq?
+ - equal?
+* Number Operation:
+ - number?
+ - integer?
+ - <
+ - <=
+ - \>
+ - \>=
+ - =
+ - \+
+ - \-
+ - \/
+ - \*
+ - zero?
+ - positive?
+ - negative?
+ - odd?
+ - even?
+ - max
+ - min
+ - abs
+ - remainder
+* Booleans:
+ - not
+ - boolean?
+* Pairs and Lists:
+ - pair?
+ - cons
+ - car
+ - cdr
+ - set-car!
+ - set-cdr!
+ - caar ... cddddr
+ - null?
+ - list?
+ - list
+ - length
+ - append
+* Control Features
+ - procedure?
+ - apply
+ - map
+ - for-each
+ - force
+ - make-promise
+* Eval
   
-for a complete list of possible procedures: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_chap_6
+for a complete list of possible procedures: https://schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_chap_6  
         
