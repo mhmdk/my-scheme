@@ -462,7 +462,9 @@ def check_apply_args(args):
 
 
 def apply_impl(procedure, args):
-    return Interpreter().do_apply(procedure, args)
+    interpreter = Interpreter()
+    value = interpreter.do_apply(procedure, args)
+    return interpreter.trampoline(value)
 
 
 @minimum_required_args('apply', 2)
