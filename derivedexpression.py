@@ -72,6 +72,8 @@ def make_lambda_body_with_internal_definitions(definitions, body):
 def make_and(tests):
     if len(tests) == 0:
         return BoolLiteral("#t")
+    if len(tests) == 1:
+        return tests[0]
     test_result_variable_name = f"{str(len(tests))}_and"
     test_result_variable_reference = VariableReference(test_result_variable_name)
     let_body = [Conditional(test_result_variable_reference, make_and(tests[1:]), test_result_variable_reference)]
